@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ep_fragment_container"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/base_layout_style"
+    android:orientation="vertical"
+    tools:context=".rfidreader.settings.endpoint.EndpointConfigSettingsFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TableRow
+                android:id="@+id/EndpointConfigRow1"
+                style="@style/table_row_layout_style"
+                android:layout_width="match_parent">
+
+                <TextView
+                    android:id="@+id/epName"
+                    style="@style/style_normal_font"
+                    android:layout_width="0dp"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="40"
+                    android:text="Name" />
+
+                <EditText
+                    android:id="@+id/et_name"
+                    android:layout_width="0dp"
+                    android:inputType="text"
+                    android:gravity="center"
+                    android:layout_weight="60"/>
+
+            </TableRow>
+            <include layout="@layout/normal_divider" />
+
+            <TableRow
+                android:id="@+id/EndpointConfigRow2"
+                style="@style/table_row_layout_style"
+                android:layout_width="match_parent">
+
+                <TextView
+                    android:id="@+id/ep_Type"
+                    style="@style/style_normal_font"
+                    android:layout_width="0dp"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="40"
+                    android:text="Type" />
+
+                <Spinner
+                    android:id="@+id/epType"
+                    style="@style/style_default_spinner"
+                    android:layout_margin="0dp"
+                    android:inputType="text"
+                    android:layout_weight="60">
+                </Spinner>
+
+            </TableRow>
+            <include layout="@layout/normal_divider" />
+
+            <TableRow
+                android:id="@+id/EndpointConfigRow3"
+                style="@style/table_row_layout_style"
+                android:layout_width="match_parent">
+
+                <TextView
+                    android:id="@+id/epProtocolTitle"
+                    style="@style/style_normal_font"
+                    android:layout_width="0dp"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="40"
+                    android:text="Protocol" />
+
+                <Spinner
+                    android:id="@+id/epProtocol"
+                    style="@style/style_default_spinner"
+                    android:layout_margin="0dp"
+                    android:layout_weight="60">
+
+                </Spinner>
+            </TableRow>
+            <include layout="@layout/normal_divider" />
+
+            <TableRow
+                android:id="@+id/EndpointConfigRow4"
+                style="@style/table_row_layout_style">
+
+                <TextView
+                    android:id="@+id/urlTitle"
+                    style="@style/style_normal_font"
+                    android:layout_width="0dp"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="40"
+                    android:text="URL" />
+
+                <EditText
+                    android:id="@+id/et_url"
+                    android:layout_width="0dp"
+                    android:inputType="text"
+                    android:gravity="center"
+                    android:layout_weight="60"/>
+
+            </TableRow>
+            <include layout="@layout/normal_divider" />
+
+            <TableRow
+                android:id="@+id/EndpointConfigRow5"
+                style="@style/table_row_layout_style">
+
+                <TextView
+                    android:id="@+id/portTitle"
+                    style="@style/style_normal_font"
+                    android:layout_width="0dp"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="40"
+                    android:text="Port" />
+
+                <EditText
+                    android:id="@+id/et_port"
+                    android:layout_width="0dp"
+                    android:inputType="number"
+                    android:gravity="center"
+                    android:layout_weight="60"/>
+
+            </TableRow>
+            <include layout="@layout/normal_divider" />
+
+            <TableRow
+                android:id="@+id/EndpointConfigRow6"
+                style="@style/table_row_layout_style">
+
+                <TextView
+                    android:id="@+id/keepAliveTitle"
+                    style="@style/style_normal_font"
+                    android:layout_width="0dp"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="40"
+                    android:text="KeepAlive (secs)" />
+
+                <EditText
+                    android:id="@+id/et_keepAlive"
+                    android:layout_width="0dp"
+                    android:inputType="number"
+                    android:gravity="center"
+                    android:layout_weight="60"/>
+
+            </TableRow>
+            <include layout="@layout/normal_divider" />
+
+            <TableRow
+                android:id="@+id/EndpointConfigRow7"
+                style="@style/table_row_layout_style">
+
+                <TextView
+                    android:id="@+id/tenantIdTitle"
+                    style="@style/style_normal_font"
+                    android:layout_width="0dp"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="40"
+                    android:text="TenantId" />
+
+                <EditText
+                    android:id="@+id/et_TenantId"
+                    android:layout_width="0dp"
+                    android:inputType="text"
+                    android:gravity="center"
+                    android:layout_weight="60"/>
+
+            </TableRow>
+            <include layout="@layout/normal_divider" />
+
+            <TableRow
+                android:id="@+id/EndpointConfigRow8"
+                style="@style/table_row_layout_style">
+
+                <TextView
+                    android:id="@+id/cleanSessionTitle"
+                    style="@style/style_normal_font"
+                    android:layout_width="0dp"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="40"
+                    android:text="Clean Session" />
+
+                <CheckBox
+                    android:id="@+id/cleanSession"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="15"
+                    android:gravity="left" />
+
+            </TableRow>
+            <include layout="@layout/normal_divider" />
+
+            <TableRow
+                android:id="@+id/EndpointConfigRow9"
+                style="@style/table_row_layout_style">
+
+                <TextView
+                    android:id="@+id/minReconnectDelayTitle"
+                    style="@style/style_normal_font"
+                    android:layout_width="0dp"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="40"
+                    android:text="Min Reconnect Delay (secs)" />
+
+                <EditText
+                    android:id="@+id/et_minReconnectDelay"
+                    android:layout_width="0dp"
+                    android:inputType="number"
+                    android:gravity="center"
+                    android:layout_weight="60"/>
+
+            </TableRow>
+            <include layout="@layout/normal_divider" />
+
+            <TableRow
+                android:id="@+id/EndpointConfigRow10"
+                style="@style/table_row_layout_style">
+
+                <TextView
+                    android:id="@+id/maxReconnectDelayTitle"
+                    style="@style/style_normal_font"
+                    android:layout_width="0dp"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="40"
+                    android:text="Max Reconnect Delay (secs)" />
+
+                <EditText
+                    android:id="@+id/et_maxReconnectDelay"
+                    android:layout_width="0dp"
+                    android:inputType="number"
+                    android:gravity="center"
+                    android:layout_weight="60"/>
+
+            </TableRow>
+            <include layout="@layout/normal_divider" />
+
+            <TableRow
+                android:id="@+id/EndpointConfigRow11"
+                style="@style/table_row_layout_style"
+                android:layout_width="match_parent">
+
+                <TextView
+                    android:id="@+id/hostVerifyTitle"
+                    style="@style/style_normal_font"
+                    android:layout_width="0dp"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="40"
+                    android:text="HostVerify" />
+
+                <Spinner
+                    android:id="@+id/hostVerify"
+                    style="@style/style_default_spinner"
+                    android:layout_margin="0dp"
+                    android:layout_weight="60">
+
+                </Spinner>
+            </TableRow>
+            <include layout="@layout/normal_divider" />
+
+            <TableRow
+                android:id="@+id/EndpointConfigRow12"
+                style="@style/table_row_layout_style">
+
+                <TextView
+                    android:id="@+id/usernameTitle"
+                    style="@style/style_normal_font"
+                    android:layout_width="0dp"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="40"
+                    android:text="Username" />
+
+                <EditText
+                    android:id="@+id/et_userName"
+                    android:layout_width="0dp"
+                    android:inputType="text"
+                    android:gravity="center"
+                    android:layout_weight="60"/>
+
+            </TableRow>
+            <include layout="@layout/normal_divider" />
+
+            <TableRow
+                android:id="@+id/EndpointConfigRow13"
+                style="@style/table_row_layout_style">
+
+                <TextView
+                    android:id="@+id/passwordTitle"
+                    style="@style/style_normal_font"
+                    android:layout_width="0dp"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="40"
+                    android:text="Password" />
+
+                <EditText
+                    android:id="@+id/et_password"
+                    android:layout_width="0dp"
+                    android:inputType="textPassword"
+                    android:gravity="center"
+                    android:layout_weight="60"/>
+
+            </TableRow>
+            <include layout="@layout/normal_divider" />
+
+            <TableRow
+                android:id="@+id/EndpointConfigRow14"
+                style="@style/table_row_layout_style"
+                android:layout_width="match_parent">
+
+                <TextView
+                    android:id="@+id/caCertificateTitle"
+                    style="@style/style_normal_font"
+                    android:layout_width="0dp"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="40"
+                    android:text="CA Certificate" />
+
+                <Spinner
+                    android:id="@+id/caCertificateSpinner"
+                    style="@style/style_default_spinner"
+                    android:layout_margin="0dp"
+                    android:layout_weight="60">
+
+                </Spinner>
+            </TableRow>
+            <include
+                android:id="@+id/configRow14Divider"
+                layout="@layout/normal_divider" />
+
+            <TableRow
+                android:id="@+id/EndpointConfigRow15"
+                style="@style/table_row_layout_style"
+                android:layout_width="match_parent">
+
+                <TextView
+                    android:id="@+id/clientCertificateTitle"
+                    style="@style/style_normal_font"
+                    android:layout_width="0dp"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="40"
+                    android:text="Client Certificate" />
+
+                <Spinner
+                    android:id="@+id/clientCertificateSpinner"
+                    style="@style/style_default_spinner"
+                    android:layout_margin="0dp"
+                    android:layout_weight="60">
+
+                </Spinner>
+            </TableRow>
+            <include
+                android:id="@+id/configRow15Divider"
+                layout="@layout/normal_divider" />
+
+            <TableRow
+                android:id="@+id/EndpointConfigRow16"
+                style="@style/table_row_layout_style"
+                android:layout_width="match_parent">
+
+                <TextView
+                    android:id="@+id/privateKeyTitle"
+                    style="@style/style_normal_font"
+                    android:layout_width="0dp"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="40"
+                    android:text="Private Key" />
+
+                <Spinner
+                    android:id="@+id/privateKeySpinner"
+                    style="@style/style_default_spinner"
+                    android:layout_margin="0dp"
+                    android:layout_weight="60">
+
+                </Spinner>
+            </TableRow>
+            <include
+                android:id="@+id/configRow16Divider"
+                layout="@layout/normal_divider" />
+
+            <TableRow
+                android:id="@+id/EndpointConfigRow17"
+                style="@style/table_row_layout_style">
+
+                <TextView
+                    android:id="@+id/cmdTopicTitle"
+                    style="@style/style_normal_font"
+                    android:layout_width="0dp"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="40"
+                    android:text="Command Topic" />
+
+                <EditText
+                    android:id="@+id/et_cmdTopic"
+                    android:layout_width="0dp"
+                    android:inputType="text"
+                    android:gravity="center"
+                    android:layout_weight="60"/>
+
+            </TableRow>
+            <include
+                android:id="@+id/configRow17Divider"
+                layout="@layout/normal_divider" />
+
+            <TableRow
+                android:id="@+id/EndpointConfigRow18"
+                style="@style/table_row_layout_style">
+
+                <TextView
+                    android:id="@+id/responseTopicTitle"
+                    style="@style/style_normal_font"
+                    android:layout_width="0dp"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="40"
+                    android:text="Response Topic" />
+
+                <EditText
+                    android:id="@+id/et_responseTopic"
+                    android:layout_width="0dp"
+                    android:inputType="text"
+                    android:gravity="center"
+                    android:layout_weight="60"/>
+
+            </TableRow>
+            <include
+                android:id="@+id/configRow18Divider"
+                layout="@layout/normal_divider" />
+
+            <TableRow
+                android:id="@+id/EndpointConfigRow19"
+                style="@style/table_row_layout_style">
+
+                <TextView
+                    android:id="@+id/eventTopicTitle"
+                    style="@style/style_normal_font"
+                    android:layout_width="0dp"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="40"
+                    android:text="Event Topic" />
+
+                <EditText
+                    android:id="@+id/et_eventTopic"
+                    android:layout_width="0dp"
+                    android:inputType="text"
+                    android:gravity="center"
+                    android:layout_weight="60"/>
+
+            </TableRow>
+          
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="4dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp">
+        <TextView
+            android:id="@+id/tv_cert_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginStart="10dp"
+            android:layout_centerVertical="true"
+            android:text="Line 1"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            android:textStyle="bold"/>
+
+
+        <Button
+            android:id="@+id/bt_cert_remove"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="10dp"
+            android:layout_centerVertical="true"
+            android:text="Remove"
+            android:textSize="12sp" />
+
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

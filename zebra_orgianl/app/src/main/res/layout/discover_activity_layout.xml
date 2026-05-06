@@ -1,0 +1,114 @@
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/discover_drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".DeviceDiscoverActivity"
+    tools:openDrawer="start">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/dis_toolbar"
+            style="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            android:elevation="4dp"
+            app:navigationIcon="@drawable/ic_hamburger"
+            app:titleTextColor="@color/white"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+        <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/settings_content_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white">
+        </FrameLayout>
+    </LinearLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/disnav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/dis_main_menu"
+        app:menu="@menu/disactivity_home_drawer">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:weightSum="2">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="@dimen/margin_top"
+                android:layout_weight="1"
+                android:gravity="bottom">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="@dimen/margin">
+
+                    <TextView
+                        android:id="@+id/battery_life"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_above="@+id/battery_percentage"
+                        android:layout_marginTop="@dimen/default_top_padding"
+                        android:text="@string/batterylife"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
+
+                    <TextView
+                        android:id="@+id/battery_percentage"
+                        style="@style/style_bold_font"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_above="@+id/disconnect_btn"
+                        android:text="0%"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+                    <ImageView
+                        android:id="@+id/disbatteryLevel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_above="@+id/disconnect_btn"
+                        android:layout_alignParentRight="true"
+                        android:paddingRight="@dimen/margin"
+                        android:paddingBottom="@dimen/default_padding"
+                        android:src="@drawable/sled_battery_level" />
+
+                    <Button
+                        android:id="@+id/disconnect_btn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginRight="@dimen/margin"
+                        android:layout_marginBottom="@dimen/marginbottom"
+                        android:backgroundTint="@color/blue"
+                        android:gravity="center"
+                        android:ellipsize="end"
+                        android:maxLines="2"
+                        android:paddingBottom="@dimen/marginbottom"
+                        android:text="@string/disconnectrfid"
+                        />
+                </RelativeLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.navigation.NavigationView>
+</androidx.drawerlayout.widget.DrawerLayout>

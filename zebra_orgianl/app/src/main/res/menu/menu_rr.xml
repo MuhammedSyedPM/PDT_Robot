@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".scanner.activities.MainActivity">
+
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/btn_sett1"
+        android:title="@string/action_settings"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/lock_inventory"
+        android:icon="@drawable/lock1"
+        android:title="@string/Lock_Unlock_inventory"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/unlock_inventory"
+        android:icon="@drawable/lock_open"
+        android:title="@string/Lock_Unlock_inventory"
+        app:showAsAction="always" />
+
+    <item android:id="@+id/action_inventory"
+        android:icon="@drawable/btn_inv1"
+        android:title="@string/action_inventory"
+        app:showAsAction="always" />
+
+</menu>

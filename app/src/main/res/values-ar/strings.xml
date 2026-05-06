@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">JetPackTwo</string>
+    <string name="select_hardware">حدد الأجهزة</string>
+    <string name="start_scan">بدء المسح</string>
+    <string name="stop_scan">توقف</string>
+    <string name="rfid_inventory">مخزون RFID</string>
+    <string name="connection_status">حالة الاتصال</string>
+    
+    <string name="launch_trace">بدء التتبع</string>
+    <string name="latest_tag">آخر علامة</string>
+    <string name="btn_select">حدد</string>
+    <string name="btn_reload">اتصال</string>
+    <string name="btn_off">قطع الاتصال</string>
+    <string name="hardware_configuration">تكوين الأجهزة</string>
+    <string name="trace_asset">تتبع الأصول</string>
+</resources>

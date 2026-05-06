@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="0dp">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:background="@android:color/white">
+
+            <TextView
+                style="@style/roboto_medium_16dp"
+                android:id="@+id/status_key"
+                android:layout_marginTop="10dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="4dp"
+                android:text="key"
+                android:background="@color/white"/>
+
+            <TextView
+                android:id="@+id/status_value"
+                style="@style/roboto_regular_16dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:background="@color/white"
+                android:padding="4dp"
+                android:text="value" />
+
+        </TableRow>
+
+        <include layout="@layout/normal_divider" />
+
+</LinearLayout>
+
+    <!-- You can add more rows below if needed -->
+
+

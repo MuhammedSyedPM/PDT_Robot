@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">JetPackTwo</string>
+    <string name="select_hardware">ഹാർഡ്‌വെയർ തിരഞ്ഞെടുക്കുക</string>
+    <string name="start_scan">സ്കാൻ തുടങ്ങുക</string>
+    <string name="stop_scan">നിർത്തുക</string>
+    <string name="rfid_inventory">RFID ഇൻവെന്ററി</string>
+    <string name="connection_status">കണക്ഷൻ സ്റ്റാറ്റസ്</string>
+    
+    <string name="launch_trace">ട്രാസ് തുടങ്ങുക</string>
+    <string name="latest_tag">അവസാന ടാഗ്</string>
+    <string name="btn_select">തിരഞ്ഞെടുക്കുക</string>
+    <string name="btn_reload">കണക്ട് ചെയ്യുക</string>
+    <string name="btn_off">ഡിസ്കണക്ട് ചെയ്യുക</string>
+    <string name="hardware_configuration">ഹാർഡ്‌വെയർ കോൺഫിഗറേഷൻ</string>
+    <string name="trace_asset">അസറ്റ് ട്രാക്കിംഗ്</string>
+</resources>

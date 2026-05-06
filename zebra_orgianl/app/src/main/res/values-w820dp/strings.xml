@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_refresh">Refresh</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="reader">Reader</string>
+    <string name="export">Export</string>
+</resources>

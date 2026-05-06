@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/bottom_sheet_add_profile"
+    android:background="@drawable/bottomsheet_background">
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/bottom_sheet_close"
+        android:layout_gravity="end"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        app:srcCompat="@drawable/ic_clear"
+        android:backgroundTint="@color/white"/>
+
+    <EditText
+        android:id="@+id/et_wifi_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Wifi Name"
+        android:layout_gravity="center_vertical"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textStyle="normal"
+        android:layout_marginTop="10dp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tv_wifi_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Wifi Name"
+        android:layout_gravity="center_vertical"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textStyle="normal"
+        android:layout_marginTop="10dp"/>
+    <TableRow
+        android:id="@+id/tbl_row_protocol"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_padding_small"
+        android:layout_marginEnd="@dimen/default_padding_small"
+        android:layout_marginTop="@dimen/default_top_margin">
+
+        <TextView
+            style="@style/style_normal_font"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="start|center"
+            android:text="Protocol" />
+
+<!--        <TextView-->
+<!--            style="@style/style_normal_font"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:id="@+id/protocol_name"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:layout_weight="2"-->
+<!--            android:gravity="start|center"-->
+<!--            android:text="Protocol" />-->
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/spinner_protocol"
+            style="@style/style_default_spinner"
+            android:layout_margin="0dp"
+            android:layout_weight="2" />
+
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tbl_row_eap"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginStart="@dimen/default_padding_small"
+        android:layout_marginEnd="@dimen/default_padding_small"
+        android:layout_marginTop="@dimen/default_top_margin">
+
+        <TextView
+            style="@style/style_normal_font"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="start|center"
+            android:text="EAP" />
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/spinner_eap"
+            style="@style/style_default_spinner"
+            android:layout_margin="0dp"
+            android:layout_weight="2" />
+
+    </TableRow>
+    <TableRow
+        android:id="@+id/tbl_row_ca_cert"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginStart="@dimen/default_padding_small"
+        android:layout_marginEnd="@dimen/default_padding_small"
+        android:layout_marginTop="@dimen/default_top_margin">
+
+        <TextView
+            style="@style/style_normal_font"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="start|center"
+            android:text="CA Cert" />
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/spinner_ca_cert"
+            style="@style/style_default_spinner"
+            android:layout_margin="0dp"
+            android:layout_weight="2" />
+
+    </TableRow>
+    <TableRow
+        android:id="@+id/tbl_row_identity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginStart="@dimen/default_padding_small"
+        android:layout_marginEnd="@dimen/default_padding_small"
+        android:layout_marginTop="@dimen/default_top_margin">
+
+        <TextView
+            style="@style/style_normal_font"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="start|center"
+            android:text="Identity" />
+
+        <EditText
+            android:id="@+id/et_identity"
+            style="@style/style_normal_font"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            app:passwordToggleEnabled="true"
+            android:gravity="start|center" />
+
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tbl_row_client_cert"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginStart="@dimen/default_padding_small"
+        android:layout_marginEnd="@dimen/default_padding_small"
+        android:layout_marginTop="@dimen/default_top_margin">
+
+        <TextView
+            style="@style/style_normal_font"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="start|center"
+            android:text="Client Cert" />
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/spinner_client_cert"
+            style="@style/style_default_spinner"
+            android:layout_margin="0dp"
+            android:layout_weight="2" />
+
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tbl_row_anonymous"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginStart="@dimen/default_padding_small"
+        android:layout_marginEnd="@dimen/default_padding_small"
+        android:layout_marginTop="@dimen/default_top_margin">
+
+        <TextView
+            style="@style/style_normal_font"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="start|center"
+            android:text="Anonymous Identity" />
+
+        <EditText
+            android:id="@+id/et_anonymous_identity"
+            style="@style/style_normal_font"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            app:passwordToggleEnabled="true"
+            android:gravity="start|center" />
+
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tbl_row_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginStart="@dimen/default_padding_small"
+        android:layout_marginEnd="@dimen/default_padding_small"
+        android:layout_marginTop="@dimen/default_top_margin">
+
+        <TextView
+            android:id="@+id/tv_password"
+            style="@style/style_normal_font"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="start|center"
+            android:text="Password" />
+
+        <EditText
+            android:id="@+id/et_password"
+            style="@style/style_normal_font"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            app:passwordToggleEnabled="true"
+            android:gravity="start|center" />
+
+
+
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tbl_row_key"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginStart="@dimen/default_padding_small"
+        android:layout_marginEnd="@dimen/default_padding_small"
+        android:layout_marginTop="@dimen/default_top_margin">
+
+        <TextView
+            android:id="@+id/tv_key"
+            style="@style/style_normal_font"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="start|center"
+            android:text="Private Key" />
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/spinner_private_key"
+            style="@style/style_default_spinner"
+            android:layout_margin="0dp"
+            android:layout_weight="2" />
+
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tbl_row_private_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginStart="@dimen/default_padding_small"
+        android:layout_marginEnd="@dimen/default_padding_small"
+        android:layout_marginTop="@dimen/default_top_margin">
+
+        <TextView
+            android:id="@+id/tv_private_password"
+            style="@style/style_normal_font"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="start|center"
+            android:text="Private Password" />
+
+        <EditText
+            android:id="@+id/et_private_password"
+            style="@style/style_normal_font"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:inputType="textPassword"
+            app:passwordToggleEnabled="true"
+            android:gravity="start|center" />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/default_top_margin"
+        android:layout_marginHorizontal="@dimen/default_padding_small">
+
+        <TextView
+            style="@style/style_normal_font"
+            android:layout_width="0dp"
+            android:layout_weight="85"
+            android:layout_gravity="center_vertical"
+            android:text="@string/preferred_wifi_title" />
+
+        <CheckBox
+            android:id="@+id/preferredWifi"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="15" />
+    </TableRow>
+
+    <Button
+        android:id="@+id/wifi_add_profile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/default_padding"
+        android:layout_marginRight="@dimen/default_padding"
+        android:layout_marginBottom="@dimen/default_padding"
+        android:text="ADD PROFILE" />
+
+
+</LinearLayout>

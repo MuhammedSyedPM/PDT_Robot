@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="6dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/iv_error_icon"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="8dp"
+            android:contentDescription="Authentication Error Icon"
+            android:src="@android:drawable/ic_dialog_alert"
+            app:tint="#FFA500" />
+
+        <TextView
+            android:id="@+id/tv_error_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:text="Authentication Required"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="#D32F2F"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_error_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:gravity="center"
+            android:text="Device authentication required. Please login as admin to continue."
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="#333333" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="12dp"
+            android:background="#E0E0E0" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="8dp"
+            android:text="PROCEED TO LOGIN"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            app:cornerRadius="6dp" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

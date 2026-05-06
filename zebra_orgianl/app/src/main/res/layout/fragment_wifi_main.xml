@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:background="@color/light_gray"
+android:orientation="vertical"
+tools:context=".wifi.WiFiMainPage">
+
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <include layout="@layout/normal_divider" />
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/statusrow"
+            android:background="@android:color/white"
+            android:onClick="wifiStatusClicked">
+
+            <TextView
+                style="@style/roboto_medium_16dp"
+                android:layout_height="60dp"
+                android:layout_marginLeft="18dp"
+                android:layout_weight="0"
+                android:text="Status" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"></LinearLayout>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:layout_gravity="center|right"
+                android:layout_marginRight="18dp"
+                android:layout_weight="0"
+                android:src="@drawable/right" />
+        </TableRow>
+
+
+        <include layout="@layout/normal_divider" />
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/wifisettingsrow"
+            android:background="@android:color/white"
+            android:onClick="wifiConfigPageClicked">
+
+            <TextView
+                style="@style/roboto_medium_16dp"
+                android:layout_height="60dp"
+                android:layout_marginLeft="18dp"
+                android:layout_weight="0"
+                android:text="Settings"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"></LinearLayout>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:layout_gravity="center|right"
+                android:layout_marginRight="18dp"
+                android:layout_weight="0"
+                android:src="@drawable/right" />
+        </TableRow>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="45" />
+    </LinearLayout>
+</ScrollView>
+</LinearLayout>

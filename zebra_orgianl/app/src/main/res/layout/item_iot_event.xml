@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white">
+
+        <TextView
+            style="@style/roboto_medium_15dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:gravity="start"
+            android:padding="8dp"
+            android:text="Type"
+            android:textStyle="bold"
+            android:background="@color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text=":"
+            android:textSize="14sp"
+            android:background="@color/white" />
+
+        <TextView
+            style="@style/roboto_medium_15dp"
+            android:id="@+id/tv_ep_type"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="7"
+            android:gravity="start"
+            android:padding="8dp"
+            android:text="Endpoint Type"
+            android:textStyle="bold"
+            android:background="@color/white" />
+    </TableRow>
+
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white">
+
+        <TextView
+            style="@style/roboto_regular_14dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:gravity="start"
+            android:padding="8dp"
+            android:text="Name"
+            android:background="@color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text=":"
+            android:textSize="14sp"
+            android:background="@color/white" />
+
+        <TextView
+            style="@style/roboto_regular_14dp"
+            android:id="@+id/tv_ep_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="7"
+            android:gravity="start"
+            android:padding="8dp"
+            android:text="Endpoint Name"
+            android:background="@color/white" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white">
+
+        <TextView
+            style="@style/roboto_regular_14dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:gravity="start"
+            android:padding="8dp"
+            android:text="Status"
+            android:background="@color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text=":"
+            android:textSize="14sp"
+            android:background="@color/white" />
+
+        <TextView
+            style="@style/roboto_regular_14dp"
+            android:id="@+id/tv_status"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="7"
+            android:gravity="start"
+            android:padding="8dp"
+            android:text="Status"
+            android:background="@color/white" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white">
+
+        <TextView
+            style="@style/roboto_regular_14dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:gravity="start"
+            android:padding="8dp"
+            android:text="Reason"
+            android:background="@color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text=":"
+            android:textSize="14sp"
+            android:background="@color/white" />
+
+        <TextView
+            style="@style/roboto_regular_14dp"
+            android:id="@+id/tv_reason"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="7"
+            android:gravity="start"
+            android:padding="8dp"
+            android:text="Reason"
+            android:background="@color/white" />
+    </TableRow>
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white">
+
+        <TextView
+            style="@style/roboto_regular_14dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:gravity="start"
+            android:padding="8dp"
+            android:text="Cause"
+            android:background="@color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text=":"
+            android:textSize="14sp"
+            android:background="@color/white" />
+
+        <TextView
+            style="@style/roboto_regular_14dp"
+            android:id="@+id/tv_cause"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="7"
+            android:gravity="start"
+            android:padding="8dp"
+            android:text="Cause"
+            android:background="@color/white" />
+    </TableRow>
+    <include layout="@layout/full_divider" />
+</LinearLayout>

@@ -1,0 +1,47 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.technowave.techno_rfid" >
+4
+5    <uses-sdk android:minSdkVersion="23" />
+6
+7    <uses-permission android:name="android.permission.INTERNET" />
+7-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:5:5-67
+7-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:5:22-64
+8    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+8-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:6:5-79
+8-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:6:22-76
+9    <uses-permission android:name="android.permission.BLUETOOTH" />
+9-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:7:5-68
+9-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:7:22-65
+10    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+10-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:8:5-74
+10-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:8:22-71
+11    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+11-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:9:5-81
+11-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:9:22-78
+12    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+12-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:10:5-79
+12-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:10:22-76
+13    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+13-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:11:5-77
+13-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:11:22-74
+14
+15    <application>
+15-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:13:5-21:19
+16        <activity
+16-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:14:9-17:40
+17            android:name="com.technowave.techno_rfid.SettingsUI.NordicSettingsActivity"
+17-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:15:13-62
+18            android:exported="false"
+18-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:17:13-37
+19            android:theme="@style/Theme.MSLib" />
+19-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:16:13-47
+20        <activity
+20-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:18:9-20:70
+21            android:name="com.technowave.techno_rfid.NurApi.NurDeviceListActivity"
+21-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:19:13-57
+22            android:theme="@style/Theme.MaterialComponents.Dialog" />
+22-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:20:13-67
+23    </application>
+24
+25</manifest>

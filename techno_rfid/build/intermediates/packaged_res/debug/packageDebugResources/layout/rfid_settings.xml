@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_large">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/q_spinner" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_tiny"
+            android:background="@drawable/bg_rectangle_outline">
+
+            <Spinner
+                android:id="@+id/q_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/xl" />
+        </RelativeLayout>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:text="@string/rounds_spinner" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_tiny"
+            android:background="@drawable/bg_rectangle_outline">
+
+            <Spinner
+                android:id="@+id/rounds_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/xl" />
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:text="@string/session_spinner" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_tiny"
+            android:background="@drawable/bg_rectangle_outline">
+
+            <Spinner
+                android:id="@+id/session_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/xl" />
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:text="@string/target_spinner" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_tiny"
+            android:background="@drawable/bg_rectangle_outline">
+
+            <Spinner
+                android:id="@+id/target_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/xl" />
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:text="@string/tx_level_spinner" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_tiny"
+            android:background="@drawable/bg_rectangle_outline">
+
+            <Spinner
+                android:id="@+id/txlevel_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/xl" />
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:text="@string/antenna_spinner" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_tiny"
+            android:background="@drawable/bg_rectangle_outline">
+
+            <com.technowave.techno_rfid.Utils.MultiSelectionSpinner
+                android:id="@+id/antenna_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/xl" />
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:text="@string/region_spinner" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_tiny"
+            android:background="@drawable/bg_rectangle_outline">
+
+            <com.technowave.techno_rfid.Utils.MultiSelectionSpinner
+                android:id="@+id/region_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/xl" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/rfprofile_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:text="@string/rfprofile_spinner" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_tiny"
+            android:background="@drawable/bg_rectangle_outline">
+
+            <Spinner
+                android:id="@+id/rfprofile_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/xl" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/linkfreq_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:text="@string/link_freg_spinner" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/spacing_tiny"
+            android:background="@drawable/bg_rectangle_outline"
+            android:layout_height="wrap_content">
+
+        <Spinner
+            android:id="@+id/linkfreq_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/xl" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/rxdecod_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:text="@string/rx_decod_spinner" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/spacing_tiny"
+            android:background="@drawable/bg_rectangle_outline"
+            android:layout_height="wrap_content">
+        <Spinner
+            android:id="@+id/rxdecod_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/xl" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/txmodul_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:text="@string/tx_modul_spinner" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/spacing_tiny"
+            android:background="@drawable/bg_rectangle_outline"
+            android:layout_height="wrap_content">
+        <Spinner
+            android:id="@+id/txmodul_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/xl" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/invfilter_min_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:text="Inventory filter Min" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/spacing_tiny"
+            android:background="@drawable/bg_rectangle_outline"
+            android:layout_height="wrap_content">
+        <Spinner
+            android:id="@+id/invfilter_min_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/xl" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/invfilter_max_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:text="Inventory filter Max" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/spacing_tiny"
+            android:background="@drawable/bg_rectangle_outline"
+            android:layout_height="wrap_content">
+        <Spinner
+            android:id="@+id/invfilter_max_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/xl" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/readfilter_min_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:text="Read filter Min"
+            android:visibility="gone" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/spacing_tiny"
+            android:background="@drawable/bg_rectangle_outline"
+            android:layout_height="wrap_content">
+        <Spinner
+            android:id="@+id/readfilter_min_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/xl"
+            android:visibility="gone" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/readfilter_max_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:text="Read filter Max"
+            android:visibility="gone" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/spacing_tiny"
+            android:background="@drawable/bg_rectangle_outline"
+            android:layout_height="wrap_content">
+
+        <Spinner
+            android:id="@+id/readfilter_max_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/xl"
+            android:visibility="gone" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/writefilter_min_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:text="Write filter Min" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/spacing_tiny"
+            android:background="@drawable/bg_rectangle_outline"
+            android:layout_height="wrap_content">
+        <Spinner
+            android:id="@+id/writefilter_min_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/xl" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/writefilter_max_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:text="Write filter Max" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/spacing_tiny"
+            android:background="@drawable/bg_rectangle_outline"
+            android:layout_height="wrap_content">
+
+        <Spinner
+            android:id="@+id/writefilter_max_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/xl" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/autotune_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_medium"
+            android:text="@string/autotune_checkbox" />
+
+        <CheckBox
+            android:id="@+id/autotune_checkbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/autotune_checkbox" />
+
+    </LinearLayout>
+</ScrollView>
+

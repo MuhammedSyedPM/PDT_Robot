@@ -1,0 +1,95 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/base_layout_style"
+    android:orientation="vertical"
+    tools:context=".rfidreader.settings.WifiFragment">
+
+<!--    <TextView-->
+<!--        style="@style/style_medium_font"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:paddingTop="10dp"-->
+<!--        android:paddingBottom="10dp"-->
+<!--        android:text="@string/wifi_settings_title" />-->
+
+<!--    <include layout="@layout/title_divider" />-->
+
+    <LinearLayout
+        android:id="@+id/wifisupportrow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:gravity="bottom">
+
+        <TextView
+            android:id="@+id/wifiText"
+            style="@style/style_normal_font"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="85"
+            android:gravity="left"
+            android:paddingTop="20dp"
+            android:text="@string/wifi_subtitle"
+            android:textSize="16dp" />
+
+        <CheckBox
+            android:id="@+id/checkboxwifi"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="15" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/wifistatusrow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:gravity="bottom"
+        android:orientation="vertical">
+
+
+        <ListView
+            android:id="@+id/lv_status"
+            android:layout_width="match_parent"
+            android:layout_height="474dp"
+            android:layout_weight="1"
+            android:maxHeight="200dp" />
+
+        <TextView
+            android:id="@+id/channel_list_band_headline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Select Channel List Band"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:padding="8dp"
+            android:textColor="@android:color/black" />
+
+        <CheckBox
+            android:id="@+id/checkbox24Gz"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2.4GHz" />
+
+        <CheckBox
+            android:id="@+id/checkbox5GzNoDfs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5GHz NON DFS" />
+
+        <CheckBox
+            android:id="@+id/checkbox5GzDfs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5GHz DFS" />
+
+    </LinearLayout>
+
+
+
+</LinearLayout>
+
+
+

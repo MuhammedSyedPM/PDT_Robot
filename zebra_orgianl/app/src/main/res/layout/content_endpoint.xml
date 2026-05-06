@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <CheckBox
+            android:id="@+id/activate"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/tv_ep_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="40dp"
+            android:gravity="center"
+            android:text="Line 1"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/bt_ep_remove"
+            android:layout_width="30dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="10dp"
+            android:background="?attr/selectableItemBackground"
+            android:scaleType="fitXY"
+            android:src="@drawable/delete_button1" />
+
+        <ImageButton
+            android:id="@+id/bt_ep_edit"
+            android:layout_width="30dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="10dp"
+            android:layout_toStartOf="@+id/bt_ep_remove"
+            android:background="?attr/selectableItemBackground"
+            android:scaleType="fitXY"
+            android:src="@drawable/edit_button" />
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>
+

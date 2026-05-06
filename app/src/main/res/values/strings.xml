@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">PDT STOCKBOT</string>
+    <string name="select_hardware">Select Hardware</string>
+    <string name="start_scan">Start Scan</string>
+    <string name="stop_scan">Stop Scan</string>
+    <string name="rfid_inventory">RFID Inventory</string>
+    <string name="connection_status">Connection Status</string>
+    
+    <!-- New labels -->
+    <string name="launch_trace">Launch Trace</string>
+    <string name="latest_tag">Latest Tag</string>
+    <string name="btn_select">Select</string>
+    <string name="btn_reload">Connect</string>
+    <string name="btn_off">Disconnect</string>
+    <string name="hardware_configuration">Hardware Configuration</string>
+    <string name="trace_asset">Trace Asset</string>
+</resources>
