@@ -72,6 +72,16 @@
             android:dividerHeight="1dp"
             android:stackFromBottom="true" />
 
+        <CheckBox
+            android:id="@+id/cb_cdc_mode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_medium"
+            android:layout_marginEnd="@dimen/spacing_medium"
+            android:text="Enable CDC Mode (Serial USB)"
+            android:textColor="@color/text_dark_color"
+            android:checked="true" />
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_cancel"
             android:layout_width="match_parent"
@@ -79,6 +89,7 @@
             android:background="@color/black"
             android:layout_margin="@dimen/spacing_medium"
             android:text="@android:string/cancel"
-            android:textAllCaps="false" />
+            android:textAllCaps="false"
+            android:textColor="@color/white" />
     </LinearLayout>
 </LinearLayout>

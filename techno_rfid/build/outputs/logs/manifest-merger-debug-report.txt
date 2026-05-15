@@ -1,7 +1,7 @@
 -- Merging decision tree log ---
 manifest
-ADDED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:2:1-23:12
-INJECTED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:2:1-23:12
+ADDED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:2:1-30:12
+INJECTED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:2:1-30:12
 	package
 		ADDED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:3:5-41
 		INJECTED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml
@@ -36,21 +36,31 @@ ADDED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest
 	android:name
 		ADDED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:11:22-74
 application
-ADDED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:13:5-21:19
-activity#com.technowave.techno_rfid.SettingsUI.NordicSettingsActivity
-ADDED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:14:9-17:40
+ADDED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:13:5-28:19
+service#com.technowave.techno_rfid.NurApi.UartService
+ADDED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:14:9-17:39
+	android:enabled
+		ADDED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:16:13-35
 	android:exported
-		ADDED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:17:13-37
-	android:theme
-		ADDED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:16:13-47
+		ADDED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:17:13-36
 	android:name
-		ADDED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:15:13-62
+		ADDED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:15:13-47
+activity#com.technowave.techno_rfid.SettingsUI.NordicSettingsActivity
+ADDED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:19:9-22:40
+	android:exported
+		ADDED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:22:13-37
+	android:theme
+		ADDED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:21:13-47
+	android:name
+		ADDED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:20:13-62
 activity#com.technowave.techno_rfid.NurApi.NurDeviceListActivity
-ADDED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:18:9-20:70
+ADDED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:24:9-27:59
+	android:exported
+		ADDED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:26:13-36
 	android:theme
-		ADDED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:20:13-67
+		ADDED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:27:13-56
 	android:name
-		ADDED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:19:13-57
+		ADDED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:25:13-57
 uses-sdk
 INJECTED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml

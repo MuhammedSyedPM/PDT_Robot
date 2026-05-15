@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.syed.jetpacktwo.data.model.LoginRequest
 import com.syed.jetpacktwo.data.model.LoginResponse
 import com.syed.jetpacktwo.data.repository.AuthRepository
+import com.syed.jetpacktwo.domain.repository.RfidRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,8 +16,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val repository: AuthRepository
+    private val repository: AuthRepository,
+    private val rfidRepository: RfidRepository
 ) : ViewModel() {
+    
+    private val _hardwareType = MutableStateFlow(rfidRepository.getCurrentType())
+    val hardwareType: StateFlow<String> = _hardwareType.asStateFlow()
 
     private val _username = MutableStateFlow("admin")
     val username: StateFlow<String> = _username.asStateFlow()
@@ -111,6 +116,11 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             repository.saveDevice(device.id.toString(), device.deviceName)
         }
+    }
+
+    fun onHardwareTypeSelect(type: String) {
+        _hardwareType.value = type
+        rfidRepository.switchHardware(type)
     }
 
     fun login() {

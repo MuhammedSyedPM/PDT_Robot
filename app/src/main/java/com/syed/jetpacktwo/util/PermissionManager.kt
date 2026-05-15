@@ -18,18 +18,24 @@ object PermissionManager {
     fun getRequiredPermissions(): Array<String> {
         val permissions = mutableListOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.BLUETOOTH,
+            Manifest.permission.BLUETOOTH_ADMIN,
+            Manifest.permission.NFC,
+            Manifest.permission.FOREGROUND_SERVICE
         )
 
-        // Add Storage permissions for compatibility with old project logic
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
+        // Storage permissions for firmware updates and logs
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
             permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE)
             permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }
 
+        // Android 12+ Bluetooth permissions
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             permissions.add(Manifest.permission.BLUETOOTH_SCAN)
             permissions.add(Manifest.permission.BLUETOOTH_CONNECT)
+            permissions.add(Manifest.permission.BLUETOOTH_ADVERTISE)
         }
         
         return permissions.toTypedArray()

@@ -117,32 +117,38 @@ public class NurApiUsbTransport implements NurApiTransport
 		{
 			mDeviceConnection = mManager.openDevice(mDevice);
 	
-			if (mDevice.getInterfaceCount() != 2)
-			{
-				throw new Exception("Invalid interface count");
-			}
-
-			mInterface = mDevice.getInterface(1);
-			mDeviceConnection.claimInterface(mInterface, true);
-	
-			int endPts = mInterface.getEndpointCount();
-	
-			for (int i = 0; i < endPts; i++)
-			{
-				UsbEndpoint endpoint = mInterface.getEndpoint(i);
+			// Search for valid interface with Bulk endpoints
+			mInterface = null;
+			for (int i = 0; i < mDevice.getInterfaceCount(); i++) {
+				UsbInterface iface = mDevice.getInterface(i);
+				UsbEndpoint in = null;
+				UsbEndpoint out = null;
 				
-				if (endpoint.getType() == UsbConstants.USB_ENDPOINT_XFER_BULK)
-				{
-					if (endpoint.getDirection() == UsbConstants.USB_DIR_IN)
-					{
-						mInput = endpoint;
-					}
-					else if (endpoint.getDirection() == UsbConstants.USB_DIR_OUT)
-					{
-						mOutput = endpoint;
+				for (int j = 0; j < iface.getEndpointCount(); j++) {
+					UsbEndpoint ep = iface.getEndpoint(j);
+					if (ep.getType() == UsbConstants.USB_ENDPOINT_XFER_BULK) {
+						if (ep.getDirection() == UsbConstants.USB_DIR_IN) in = ep;
+						else if (ep.getDirection() == UsbConstants.USB_DIR_OUT) out = ep;
 					}
 				}
+				
+				if (in != null && out != null) {
+					mInterface = iface;
+					mInput = in;
+					mOutput = out;
+					break;
+				}
 			}
+
+			if (mInterface == null) {
+				Log.e(TAG, "No valid Bulk interface found for device " + mDevice.getDeviceName());
+				throw new Exception("No valid Bulk interface found");
+			}
+
+			Log.d(TAG, "Claiming interface: " + mInterface.getId());
+			mDeviceConnection.claimInterface(mInterface, true);
+	
+			Log.d(TAG, "connect OK. Interface: " + mInterface.getId() + ", Input EP: " + mInput.getAddress() + ", Output EP: " + mOutput.getAddress());
 			
 			if (mInput == null || mOutput == null)
 			{

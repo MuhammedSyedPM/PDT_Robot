@@ -38,6 +38,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.delay
+import com.syed.jetpacktwo.util.debouncedClickable
+import com.syed.jetpacktwo.util.rememberDebouncedClick
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -232,7 +234,7 @@ fun LoginScreen(
                         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                         trailingIcon = {
                             val image = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
-                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                            IconButton(onClick = rememberDebouncedClick { passwordVisible = !passwordVisible }) {
                                 Icon(imageVector = image, contentDescription = null)
                             }
                         },
@@ -247,7 +249,7 @@ fun LoginScreen(
                     )
 
                     Button(
-                        onClick = { viewModel.login() },
+                        onClick = rememberDebouncedClick { viewModel.login() },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp),
@@ -273,13 +275,13 @@ fun LoginScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        TextButton(onClick = { showConfigDialog = true }) {
+                        TextButton(onClick = rememberDebouncedClick { showConfigDialog = true }) {
                             Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(6.dp))
                             Text("CONFIG", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                         }
 
-                        TextButton(onClick = onExit) {
+                        TextButton(onClick = rememberDebouncedClick { onExit() }) {
                             Icon(Icons.Default.ExitToApp, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(6.dp))
                             Text("EXIT", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
@@ -324,7 +326,9 @@ fun LoginScreen(
             isLoading = viewModel.isLoading.collectAsState().value,
             onDismiss = { showConfigDialog = false },
             epcFilter = viewModel.epcFilter.collectAsState().value,
-            onSaveFilter = { viewModel.saveEpcFilter(it) }
+            onSaveFilter = { viewModel.saveEpcFilter(it) },
+            hardwareType = viewModel.hardwareType.collectAsState().value,
+            onHardwareTypeSelect = { viewModel.onHardwareTypeSelect(it) }
         )
     }
 }
@@ -342,9 +346,11 @@ fun ConfigDialog(
     isLoading: Boolean,
     onDismiss: () -> Unit,
     epcFilter: String,
-    onSaveFilter: (String) -> Unit
+    onSaveFilter: (String) -> Unit,
+    hardwareType: String,
+    onHardwareTypeSelect: (String) -> Unit
 ) {
-    var configMode by remember { mutableStateOf("MENU") } // MENU, URL, DEVICE, FILTER
+    var configMode by remember { mutableStateOf("MENU") } // MENU, URL, DEVICE, FILTER, HARDWARE
     var currentFilterText by remember { mutableStateOf(epcFilter) }
     
     // Update local state when prop changes
@@ -370,6 +376,7 @@ fun ConfigDialog(
                         "URL" -> "Base URL Settings"
                         "DEVICE" -> "Device Settings"
                         "FILTER" -> "EPC Filter Settings"
+                        "HARDWARE" -> "Hardware Type"
                         else -> "System Configuration"
                     },
                     fontSize = 22.sp,
@@ -399,6 +406,11 @@ fun ConfigDialog(
                                 title = "EPC Filter Settings",
                                 icon = Icons.Default.FilterList,
                                 onClick = { configMode = "FILTER" }
+                            )
+                            ConfigMenuButton(
+                                title = "Hardware Provider",
+                                icon = Icons.Default.DeveloperBoard,
+                                onClick = { configMode = "HARDWARE" }
                             )
                         }
                     }
@@ -460,6 +472,37 @@ fun ConfigDialog(
                             placeholder = { Text("Empty to scan all tags") }
                         )
                     }
+                    "HARDWARE" -> {
+                        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                            listOf("NORDIC", "ZEBRA", "CHAINWAY").forEach { type ->
+                                val isSelected = hardwareType == type
+                                Surface(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable { onHardwareTypeSelect(type) },
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f) else Color.Transparent,
+                                    border = androidx.compose.foundation.BorderStroke(
+                                        1.dp, 
+                                        if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+                                    )
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(16.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                    ) {
+                                        RadioButton(selected = isSelected, onClick = { onHardwareTypeSelect(type) })
+                                        Text(
+                                            text = type,
+                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -513,7 +556,7 @@ fun ConfigMenuButton(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() },
+            .debouncedClickable { onClick() },
         shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
         border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))

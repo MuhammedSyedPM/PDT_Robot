@@ -27,21 +27,32 @@
 13-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:11:22-74
 14
 15    <application>
-15-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:13:5-21:19
-16        <activity
-16-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:14:9-17:40
-17            android:name="com.technowave.techno_rfid.SettingsUI.NordicSettingsActivity"
-17-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:15:13-62
-18            android:exported="false"
-18-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:17:13-37
-19            android:theme="@style/Theme.MSLib" />
-19-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:16:13-47
-20        <activity
-20-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:18:9-20:70
-21            android:name="com.technowave.techno_rfid.NurApi.NurDeviceListActivity"
-21-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:19:13-57
-22            android:theme="@style/Theme.MaterialComponents.Dialog" />
-22-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:20:13-67
-23    </application>
-24
-25</manifest>
+15-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:13:5-28:19
+16        <service
+16-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:14:9-17:39
+17            android:name="com.technowave.techno_rfid.NurApi.UartService"
+17-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:15:13-47
+18            android:enabled="true"
+18-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:16:13-35
+19            android:exported="true" />
+19-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:17:13-36
+20
+21        <activity
+21-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:19:9-22:40
+22            android:name="com.technowave.techno_rfid.SettingsUI.NordicSettingsActivity"
+22-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:20:13-62
+23            android:exported="false"
+23-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:22:13-37
+24            android:theme="@style/Theme.MSLib" />
+24-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:21:13-47
+25        <activity
+25-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:24:9-27:59
+26            android:name="com.technowave.techno_rfid.NurApi.NurDeviceListActivity"
+26-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:25:13-57
+27            android:exported="true"
+27-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:26:13-36
+28            android:theme="@android:style/Theme.Dialog" />
+28-->D:\2026_25_old_before\JetPackTwo\techno_rfid\src\main\AndroidManifest.xml:27:13-56
+29    </application>
+30
+31</manifest>

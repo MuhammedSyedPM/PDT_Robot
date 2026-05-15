@@ -114,6 +114,7 @@ id autotune_checkbox
 id autotune_label
 id backButton
 id btn_cancel
+id cb_cdc_mode
 id invfilter_max_label
 id invfilter_max_spinner
 id invfilter_min_label

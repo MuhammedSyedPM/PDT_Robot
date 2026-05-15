@@ -30,6 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.syed.jetpacktwo.presentation.rfid.RfidViewModel
 import com.syed.jetpacktwo.ui.theme.ErrorRed
 import kotlinx.coroutines.launch
+import com.syed.jetpacktwo.util.rememberDebouncedClick
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,14 +61,14 @@ fun ScanScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Inventory Link", color = MaterialTheme.colorScheme.onBackground) },
+                title = { Text("Smart scan", color = MaterialTheme.colorScheme.onBackground) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = rememberDebouncedClick { onBack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onBackground)
                     }
                 },
                 actions = {
-                    IconButton(onClick = { settingsViewModel.toggleTheme() }) {
+                    IconButton(onClick = rememberDebouncedClick { settingsViewModel.toggleTheme() }) {
                         Icon(
                             imageVector = if (isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
                             contentDescription = "Toggle Theme",
@@ -115,23 +116,23 @@ fun ScanScreen(
 
                 // Core Toggle Button
                 Button(
-                    onClick = {
-                        if (isStopping) return@Button // Ignore clicks while stopping
-                        
-                        if (localIsScanning) {
-                            scope.launch {
-                                isStopping = true
-                                viewModel.stopReader()
-                                viewModel.saveCurrentTags()
+                    onClick = rememberDebouncedClick {
+                        if (!isStopping) {
+                            if (localIsScanning) {
+                                scope.launch {
+                                    isStopping = true
+                                    viewModel.stopReader()
+                                    viewModel.saveCurrentTags()
+                                    viewModel.clearTagReads()
+                                    kotlinx.coroutines.delay(1200) // 1.2 second loader
+                                    localIsScanning = false
+                                    isStopping = false
+                                }
+                            } else {
                                 viewModel.clearTagReads()
-                                kotlinx.coroutines.delay(1200) // 1.2 second loader
-                                localIsScanning = false
-                                isStopping = false
+                                viewModel.startReader()
+                                localIsScanning = true
                             }
-                        } else {
-                            viewModel.clearTagReads()
-                            viewModel.startReader()
-                            localIsScanning = true
                         }
                     },
                     modifier = Modifier.size(120.dp),

@@ -11,13 +11,20 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application>
+        <service
+            android:name=".NurApi.UartService"
+            android:enabled="true"
+            android:exported="true" />
+            
         <activity
             android:name=".SettingsUI.NordicSettingsActivity"
             android:theme="@style/Theme.MSLib"
             android:exported="false" />
+            
         <activity
             android:name=".NurApi.NurDeviceListActivity"
-            android:theme="@style/Theme.MaterialComponents.Dialog" />
+            android:exported="true"
+            android:theme="@android:style/Theme.Dialog" />
     </application>
 
 </manifest>

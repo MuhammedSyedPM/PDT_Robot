@@ -113,6 +113,7 @@ int id autotune_checkbox 0x0
 int id autotune_label 0x0
 int id backButton 0x0
 int id btn_cancel 0x0
+int id cb_cdc_mode 0x0
 int id invfilter_max_label 0x0
 int id invfilter_max_spinner 0x0
 int id invfilter_min_label 0x0

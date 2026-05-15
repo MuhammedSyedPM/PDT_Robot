@@ -34,6 +34,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -84,6 +85,7 @@ public class NurDeviceListActivity extends Activity implements NurDeviceScanner.
     private boolean mScanning = false;
     private ProgressBar mScanProgress;
     private Button mCancelButton;
+    private CheckBox mCdcCheckBox;
 
     private static final int PERMISSION_REQUEST_CODE = 1234;
 
@@ -119,6 +121,7 @@ public class NurDeviceListActivity extends Activity implements NurDeviceScanner.
         layoutParams.y = 200;
 
         mCancelButton = (Button) findViewById(R.id.btn_cancel);
+        mCdcCheckBox = (CheckBox) findViewById(R.id.cb_cdc_mode);
         mScanProgress = (ProgressBar) findViewById(R.id.scan_progress);
         mScanProgress.setVisibility(View.VISIBLE);
         mScanProgress.setScaleY(0.5f);
@@ -224,6 +227,11 @@ public class NurDeviceListActivity extends Activity implements NurDeviceScanner.
             NurDeviceSpec deviceSpec;
             mDeviceScanner.stopScan();
             deviceSpec = mDeviceList.get(position);
+
+            if (deviceSpec.getType().equalsIgnoreCase("USB") && mCdcCheckBox != null && mCdcCheckBox.isChecked()) {
+                deviceSpec.setPart("cdc", "1");
+            }
+
             Bundle b = new Bundle();
             // e.g. "type=BLE;addr=00:00:00:00:00:00;name=XXX;rssi=-44"
             b.putString(SPECSTR, deviceSpec.getSpec());

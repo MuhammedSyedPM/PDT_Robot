@@ -157,19 +157,33 @@ class RfidRepositoryImpl @Inject constructor(
             mNurApi.disconnect() // Explicit API reset
         } catch (_: Exception) {}
 
-        // 2s delay allows BT stack to settle (prevents GATT 133)
-        mainHandler.postDelayed({
+        val spec = try { NurDeviceSpec(scannerSpec) } catch (e: Exception) { null }
+        val isUsb = spec?.type?.equals("USB", ignoreCase = true) == true
+
+        if (isUsb) {
+            // USB connection can be immediate
             try {
-                val spec = NurDeviceSpec(scannerSpec)
-                hAcTr = NurDeviceSpec.createAutoConnectTransport(context, mNurApi, spec)
-                val strAddress = spec.address
-                hAcTr?.setAddress(strAddress)
-                showConnecting(strAddress)
+                hAcTr = NurDeviceSpec.createAutoConnectTransport(context, mNurApi, spec!!)
+                hAcTr?.setAddress("USB")
+                showConnecting("USB")
             } catch (e: Exception) {
-                Log.d("RfidRepositoryImpl", "Connection error: ${e.message}")
-                updateStatus(e.message ?: "Error", Color.RED, false)
+                updateStatus(e.message ?: "USB Error", Color.RED, false)
             }
-        }, 2000)
+        } else {
+            // 2s delay allows BT stack to settle (prevents GATT 133)
+            mainHandler.postDelayed({
+                try {
+                    val currentSpec = NurDeviceSpec(scannerSpec)
+                    hAcTr = NurDeviceSpec.createAutoConnectTransport(context, mNurApi, currentSpec)
+                    val strAddress = currentSpec.address
+                    hAcTr?.setAddress(strAddress)
+                    showConnecting(strAddress)
+                } catch (e: Exception) {
+                    Log.d("RfidRepositoryImpl", "Connection error: ${e.message}")
+                    updateStatus(e.message ?: "Error", Color.RED, false)
+                }
+            }, 2000)
+        }
     }
 
     override fun disconnectReader() {

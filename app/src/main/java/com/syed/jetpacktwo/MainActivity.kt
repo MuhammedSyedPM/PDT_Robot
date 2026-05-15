@@ -117,6 +117,7 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         
         checkAndRequestPermissions()
+        handleIntent(intent)
 
         setContent {
             val isDarkMode by settingsViewModel.isDarkMode.collectAsState()
@@ -149,6 +150,19 @@ class MainActivity : AppCompatActivity() {
             viewModel.disconnect()
         }
         super.onStop()
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        if (intent?.action == android.hardware.usb.UsbManager.ACTION_USB_DEVICE_ATTACHED) {
+            // Nordic USB attached, try to connect
+            viewModel.connect("type=USB")
+        }
     }
 
     @Deprecated("Deprecated in Java")

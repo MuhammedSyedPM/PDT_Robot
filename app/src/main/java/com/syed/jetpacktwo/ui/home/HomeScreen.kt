@@ -33,6 +33,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.syed.jetpacktwo.presentation.rfid.RfidViewModel
+import com.syed.jetpacktwo.util.debouncedClickable
+import com.syed.jetpacktwo.util.rememberDebouncedClick
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -126,7 +128,7 @@ fun HomeScreen(
                     }
                     
                     Text(
-                        text = "Smart Stock Take",
+                        text = "Welcome!",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
@@ -137,7 +139,7 @@ fun HomeScreen(
                 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     // Refresh icon (matching screenshot)
-                    IconButton(onClick = { viewModel.connectLastSaved() }) {
+                    IconButton(onClick = rememberDebouncedClick { viewModel.connectLastSaved() }) {
                         Icon(
                             imageVector = Icons.Default.Refresh,
                             contentDescription = "Refresh",
@@ -146,7 +148,7 @@ fun HomeScreen(
                     }
 
                     // Theme Toggle (Groww Style)
-                    IconButton(onClick = { settingsViewModel.toggleTheme() }) {
+                    IconButton(onClick = rememberDebouncedClick { settingsViewModel.toggleTheme() }) {
                         Icon(
                             imageVector = if (isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
                             contentDescription = "Toggle Theme",
@@ -162,7 +164,7 @@ fun HomeScreen(
                         shape = CircleShape,
                         color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
                     ) {
-                        IconButton(onClick = { /* Settings */ }) {
+                        IconButton(onClick = rememberDebouncedClick { /* Settings */ }) {
                             Icon(
                                 imageVector = Icons.Default.Person,
                                 contentDescription = null,
@@ -231,7 +233,7 @@ fun HomeScreen(
                             )
                         }
 
-                        // Compact Setup Button and Battery
+
                         Column(horizontalAlignment = Alignment.End) {
                             if (readerStatus.batteryLevel != null) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -253,7 +255,7 @@ fun HomeScreen(
                             }
                             
                             TextButton(
-                                onClick = { 
+                                onClick = rememberDebouncedClick { 
                                     if (context is android.app.Activity) {
                                         viewModel.launchDeviceList(context)
                                     }
@@ -456,7 +458,7 @@ fun ActionCard(
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onClick() },
+            .debouncedClickable { onClick() },
         color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(24.dp),
         shadowElevation = 2.dp

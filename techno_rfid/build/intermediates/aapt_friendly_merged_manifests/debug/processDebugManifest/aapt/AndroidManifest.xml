@@ -13,13 +13,19 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application>
+        <service
+            android:name="com.technowave.techno_rfid.NurApi.UartService"
+            android:enabled="true"
+            android:exported="true" />
+
         <activity
             android:name="com.technowave.techno_rfid.SettingsUI.NordicSettingsActivity"
             android:exported="false"
             android:theme="@style/Theme.MSLib" />
         <activity
             android:name="com.technowave.techno_rfid.NurApi.NurDeviceListActivity"
-            android:theme="@style/Theme.MaterialComponents.Dialog" />
+            android:exported="true"
+            android:theme="@android:style/Theme.Dialog" />
     </application>
 
 </manifest>

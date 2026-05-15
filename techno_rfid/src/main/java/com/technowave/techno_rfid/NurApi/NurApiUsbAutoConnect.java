@@ -86,7 +86,11 @@ public class NurApiUsbAutoConnect implements NurApiAutoConnectTransport
 		this.mApi = na;
 		this.mUsbManager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
 		
-	    mPermissionIntent = PendingIntent.getBroadcast(mContext, 0, new Intent(ACTION_USB_PERMISSION), 0);
+		int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+			flags |= PendingIntent.FLAG_MUTABLE;
+		}
+	    mPermissionIntent = PendingIntent.getBroadcast(mContext, 0, new Intent(ACTION_USB_PERMISSION), flags);
 	}
 
 	private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() 
@@ -98,18 +102,17 @@ public class NurApiUsbAutoConnect implements NurApiAutoConnectTransport
 			if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action))
 			{
 				synchronized (this) {
-					Log.d(TAG, "ACTION_USB_DEVICE_ATTACHED " + intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false));
 					mUsbDevice = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-					if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false))
-					{
-						if (mUsbDevice != null) {
+					Log.d(TAG, "ACTION_USB_DEVICE_ATTACHED " + mUsbDevice);
+					if (mUsbDevice != null && checkIsNurDevice(mUsbDevice)) {
+						if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false))
+						{
 							NurApiUsbAutoConnect.this.setAddress(getAddress());
+						} 
+						else {
+							Log.d(TAG, "ACTION_USB_DEVICE_ATTACHED permission not yet granted, requesting...");
+							mUsbManager.requestPermission(mUsbDevice, mPermissionIntent);
 						}
-					} 
-					else {
-						Log.d(TAG, "ACTION_USB_DEVICE_ATTACHED permission denied for device " + mUsbDevice);
-						Log.d(TAG, "FORCE CONNECTION to" + getAddress());
-						NurApiUsbAutoConnect.this.setAddress(getAddress());
 					}
 				}
 			} 
@@ -120,13 +123,38 @@ public class NurApiUsbAutoConnect implements NurApiAutoConnectTransport
 			else if (ACTION_USB_PERMISSION.equals(action))
 			{
 				mRequestingPermission = false;
-				Log.d(TAG, "ACTION_USB_PERMISSION " + intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false));
+				boolean granted = intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false);
+				Log.d(TAG, "ACTION_USB_PERMISSION granted: " + granted);
 
-				if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false))
+				if (granted)
 					NurApiUsbAutoConnect.this.setAddress(getAddress());
 			}
 		}
 	};
+
+	private static boolean checkIsNurDevice(UsbDevice device) {
+		if (device == null) return false;
+		int vid = device.getVendorId();
+		int pid = device.getProductId();
+		int cls = device.getDeviceClass();
+		
+		// Nordic ID VIDs
+		if (vid == 1254 || vid == 3589 || vid == 5593) return true;
+		
+		// Common USB-Serial VIDs
+		if (vid == 1027 || vid == 4292 || vid == 1155 || vid == 9025 || vid == 6790 || vid == 1659) return true;
+		
+		// CDC Class (2 = Communications, 10 = CDC Data)
+		if (cls == 2 || cls == 10) return true;
+		
+		// Check interface class as well
+		for (int i = 0; i < device.getInterfaceCount(); i++) {
+			int icls = device.getInterface(i).getInterfaceClass();
+			if (icls == 2 || icls == 10) return true;
+		}
+
+		return false;
+	}
 
 	private void connect()
 	{
@@ -194,7 +222,7 @@ public class NurApiUsbAutoConnect implements NurApiAutoConnectTransport
 
 		this.mUsbDevice = null;
 		for (UsbDevice device : mUsbManager.getDeviceList().values()) {
-			if(device.getVendorId() == 1254 || device.getVendorId() == 3589) {
+			if(checkIsNurDevice(device)) {
 				this.mUsbDevice = device;
 				break;
 			}
@@ -207,14 +235,20 @@ public class NurApiUsbAutoConnect implements NurApiAutoConnectTransport
 		}
 
 		if (mUsbDevice != null) {
-			new Handler().postDelayed(new Runnable() {
+			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					connect();
+					try {
+						Thread.sleep(200);
+						connect();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
-			}, 200);
+			}).start();
 		}
 	}
+
 
 	@Override
 	public void onPause() {

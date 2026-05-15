@@ -65,9 +65,10 @@ class DynamicRfidRepository @Inject constructor(
         .shareIn(scope, SharingStarted.Eagerly, 16)
 
     private fun getRepoForType(type: String): RfidRepository {
-        return when (type) {
+        return when (type.uppercase()) {
             "ZEBRA" -> zebraRepo
             "CHAINWAY" -> chainwayRepo
+            "NORDIC" -> nordicRepo
             else -> nordicRepo
         }
     }
