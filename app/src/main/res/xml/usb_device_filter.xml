@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Nordic ID VIDs and PIDs -->
+    <usb-device vendor-id="1254" product-id="274" /> <!-- 0x04E6, 0x0112 -->
+    <usb-device vendor-id="1254" product-id="2321" /> <!-- 0x04E6, 0x0911 -->
+    <usb-device vendor-id="1254" /> <!-- 0x04E6 generic -->
+    <usb-device vendor-id="3589" /> <!-- 0x0E05 generic -->
+    <usb-device vendor-id="5593" /> <!-- 0x15D9 generic -->
+    
+    <!-- CDC ACM Class (Communication Device Class) -->
+    <usb-device class="2" /> <!-- CDC Control -->
+    <usb-device class="10" /> <!-- CDC Data -->
+    <usb-device class="2" subclass="2" /> <!-- CDC ACM -->
+    
+    <!-- common USB to Serial converters often used in readers -->
+    <usb-device vendor-id="1027" /> <!-- 0x0403 FTDI -->
+    <usb-device vendor-id="4292" /> <!-- 0x10C4 Silicon Labs -->
+    <usb-device vendor-id="1155" /> <!-- 0x0483 STMicroelectronics -->
+    <usb-device vendor-id="9025" /> <!-- 0x2341 Arduino -->
+    <usb-device vendor-id="4369" /> <!-- 0x1111 various CDC -->
+    <usb-device vendor-id="6790" /> <!-- 0x1A86 Qinheng CH34x -->
+    <usb-device vendor-id="1659" /> <!-- 0x067B Prolific -->
+    <usb-device vendor-id="4966" /> <!-- 0x1366 SEGGER -->
+    <usb-device vendor-id="1105" /> <!-- 0x0451 TI -->
+</resources>
