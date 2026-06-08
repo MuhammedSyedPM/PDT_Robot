@@ -18,7 +18,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
 
-    <uses-sdk tools:overrideLibrary="com.zebra.rfid.api3" />
+    <uses-sdk tools:overrideLibrary="com.zebra.rfid.api3, com.zebra.scannercontrol, com.zebra.rfidhostlib, com.zebra.rfidseriallib" />
 
     <application
         android:name=".JetPackTwoApp"

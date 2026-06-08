@@ -598,6 +598,47 @@ class ZebraRfidRepositoryImpl @Inject constructor(
     override fun switchHardware(type: String) {}
     override fun getCurrentType(): String = "ZEBRA"
 
+    override fun launchPowerSettings(activity: Activity) {
+        android.widget.Toast.makeText(activity, "Power settings not available for Zebra", android.widget.Toast.LENGTH_SHORT).show()
+    }
+
+    override fun setPowerLevel(level: Int) {
+        val prefs = context.getSharedPreferences("zebra_prefs", Context.MODE_PRIVATE)
+        prefs.edit().putInt("power_level", level).apply()
+        
+        try {
+            if (reader?.isConnected == true && reader?.isCapabilitiesReceived == true) {
+                val powerLevels = reader?.ReaderCapabilities?.transmitPowerLevelValues
+                if (powerLevels != null && powerLevels.isNotEmpty()) {
+                    var bestIndex = 0
+                    var minDiff = Int.MAX_VALUE
+                    for (i in powerLevels.indices) {
+                        val diff = Math.abs(powerLevels[i] - level)
+                        if (diff < minDiff) {
+                            minDiff = diff
+                            bestIndex = i
+                        }
+                    }
+                    val numAntennas = reader?.ReaderCapabilities?.numAntennaSupported ?: 0
+                    for (i in 1..numAntennas) {
+                        try {
+                            val config = reader?.Config?.Antennas?.getAntennaRfConfig(i)
+                            if (config != null) {
+                                config.transmitPowerIndex = bestIndex
+                                reader?.Config?.Antennas?.setAntennaRfConfig(i, config)
+                            }
+                        } catch (_: Exception) {}
+                    }
+                }
+            }
+        } catch (_: Exception) {}
+    }
+
+    override fun getPowerLevel(): Int {
+        val prefs = context.getSharedPreferences("zebra_prefs", Context.MODE_PRIVATE)
+        return prefs.getInt("power_level", 300)
+    }
+
     override fun dispose() {
         scope.launch {
             try {

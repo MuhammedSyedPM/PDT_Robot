@@ -154,5 +154,17 @@ class RfidViewModel @Inject constructor(
         impinjRepo.saveConfig(config)
     }
 
+    fun launchPowerSettings(activity: Activity) {
+        rfidRepository.launchPowerSettings(activity)
+    }
+
+    fun setPowerLevel(level: Int) {
+        rfidRepository.setPowerLevel(level)
+    }
+
+    fun getPowerLevel(): Int {
+        return rfidRepository.getPowerLevel()
+    }
+
     fun dispose() = rfidRepository.dispose()
 }

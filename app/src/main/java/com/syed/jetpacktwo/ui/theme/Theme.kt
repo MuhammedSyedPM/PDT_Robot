@@ -11,10 +11,12 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
-private val DarkColorScheme = darkColorScheme(
-    primary = GrowwGreen,
+import androidx.compose.ui.graphics.Color
+
+private fun createDarkColorScheme(primaryColor: Color) = darkColorScheme(
+    primary = primaryColor,
     onPrimary = DarkBackground,
-    secondary = GrowwGreenDark,
+    secondary = primaryColor,
     background = DarkBackground,
     surface = DarkSurface,
     onBackground = DarkTextPrimary,
@@ -22,10 +24,10 @@ private val DarkColorScheme = darkColorScheme(
     outline = DarkOutline
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = GrowwGreen,
+private fun createLightColorScheme(primaryColor: Color) = lightColorScheme(
+    primary = primaryColor,
     onPrimary = LightSurface,
-    secondary = GrowwGreenDark,
+    secondary = primaryColor,
     background = LightBackground,
     surface = LightSurface,
     onBackground = LightTextPrimary,
@@ -37,6 +39,7 @@ private val LightColorScheme = lightColorScheme(
 fun JetPackTwoTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false, 
+    primaryColor: Color = GrowwGreen,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -44,8 +47,8 @@ fun JetPackTwoTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> createDarkColorScheme(primaryColor)
+        else -> createLightColorScheme(primaryColor)
     }
 
     MaterialTheme(

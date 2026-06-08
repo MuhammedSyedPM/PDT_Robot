@@ -58,6 +58,9 @@ public class NordicSettingsActivity extends AppCompatActivity implements NurApiL
 
     //Need to keep track connection state with NurApi IsConnected
     private boolean mIsConnected;
+    
+    public static NurApi sharedNurApi = null;
+    public static AccessoryExtension sharedAccExt = null;
 
     //private Button mConnectButton;
     private TextView mConnectionStatusTextView;
@@ -84,6 +87,7 @@ public class NordicSettingsActivity extends AppCompatActivity implements NurApiL
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        android.util.Log.d("SYED_CONNECT", "NordicSettingsActivity onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nordic_settings);
         viewPager = findViewById(R.id.viewPager);
@@ -109,22 +113,41 @@ public class NordicSettingsActivity extends AppCompatActivity implements NurApiL
 
         mIsConnected = false;
 
-        //Create NurApi handle.
-        mNurApi = new NurApi();
+        if (sharedNurApi != null) {
+            mNurApi = sharedNurApi;
+            mAccExt = sharedAccExt != null ? sharedAccExt : new AccessoryExtension(mNurApi);
+            mIsConnected = mNurApi.isConnected();
+            
+            if (mIsConnected) {
+                mUiConnStatusText = "Connected to Reader (Shared)";
+                mUiConnStatusTextColor = Color.GREEN;
+                mUiConnButtonText = "DISCONNECT";
+                runOnUiThread(this::setupViewPager);
+                findViewById(R.id.menu).setVisibility(View.GONE);
+            } else {
+                mUiConnStatusText = "Disconnected!";
+                mUiConnStatusTextColor = Color.RED;
+                mUiConnButtonText = "CONNECT";
+            }
+        } else {
+            //Create NurApi handle.
+            mNurApi = new NurApi();
 
-        //Accessory extension contains device specific API like barcode read, beep etc..
-        //This included in NurApi.jar
-        mAccExt = new AccessoryExtension(mNurApi);
+            //Accessory extension contains device specific API like barcode read, beep etc..
+            //This included in NurApi.jar
+            mAccExt = new AccessoryExtension(mNurApi);
 
-        // In this activity, we use mNurApiListener for receiving events
-        mNurApi.setListener(this);
+            // In this activity, we use mNurApiListener for receiving events
+            mNurApi.setListener(this);
+            
+            mUiConnStatusText = "Disconnected!";
+            mUiConnStatusTextColor = Color.RED;
+            mUiConnButtonText = "CONNECT";
+        }
 
         //mConnectButton = (Button)findViewById(R.id.button_connect);
         mConnectionStatusTextView = (TextView) findViewById((R.id.nordicReaderStatusTextView));
 
-        mUiConnStatusText = "Disconnected!";
-        mUiConnStatusTextColor = Color.RED;
-        mUiConnButtonText = "CONNECT";
         showOnUI();
     }
 
@@ -356,6 +379,7 @@ public class NordicSettingsActivity extends AppCompatActivity implements NurApiL
 
     @Override
     protected void onDestroy() {
+        android.util.Log.d("SYED_CONNECT", "NordicSettingsActivity onDestroy");
         Log.i(TAG, "onDestroy()");
         super.onDestroy();
         //Kill connection when app killed

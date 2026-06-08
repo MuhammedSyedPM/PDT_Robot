@@ -118,6 +118,18 @@ class DynamicRfidRepository @Inject constructor(
         impinjRepo.dispose()
     }
 
+
+
+    override fun launchPowerSettings(activity: Activity) = activeRepo.launchPowerSettings(activity)
+
+    override fun setPowerLevel(level: Int) {
+        activeRepo.setPowerLevel(level)
+    }
+
+    override fun getPowerLevel(): Int {
+        return activeRepo.getPowerLevel()
+    }
+
     override fun setEpcFilter(filter: String) {
         nordicRepo.setEpcFilter(filter)
         chainwayRepo.setEpcFilter(filter)

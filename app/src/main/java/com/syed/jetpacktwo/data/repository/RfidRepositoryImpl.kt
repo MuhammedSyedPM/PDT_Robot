@@ -149,6 +149,11 @@ class RfidRepositoryImpl @Inject constructor(
             updateStatus("No scanner selected", Color.RED, false)
             return
         }
+        if (mNurApi.isConnected && lastUsedScannerSpec == scannerSpec) {
+            Log.d("RfidRepositoryImpl", "Already connected to the same spec, returning early")
+            updateStatus("Connected", Color.GREEN, true)
+            return
+        }
         lastUsedScannerSpec = scannerSpec
         
         // Comprehensive cleanup before new connection
@@ -391,6 +396,20 @@ class RfidRepositoryImpl @Inject constructor(
 
     override fun switchHardware(type: String) { /* Master handles this */ }
     override fun getCurrentType(): String = "NORDIC"
+
+    override fun launchPowerSettings(activity: Activity) {
+        com.technowave.techno_rfid.SettingsUI.NordicSettingsActivity.sharedNurApi = mNurApi
+        com.technowave.techno_rfid.SettingsUI.NordicSettingsActivity.sharedAccExt = mAccExt
+        activity.startActivity(android.content.Intent(activity, com.technowave.techno_rfid.SettingsUI.NordicSettingsActivity::class.java))
+    }
+
+    override fun setPowerLevel(level: Int) {
+        // Nordic uses NordicSettingsActivity for power
+    }
+
+    override fun getPowerLevel(): Int {
+        return -1
+    }
 
     override fun dispose() {
         if (::mNurApi.isInitialized) mNurApi.disconnect()

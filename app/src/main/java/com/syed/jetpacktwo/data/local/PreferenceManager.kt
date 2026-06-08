@@ -23,6 +23,7 @@ class PreferenceManager @Inject constructor(
         val SCHEDULER_ID_KEY = stringPreferencesKey("scheduler_id")
         val EPC_FILTER_KEY = stringPreferencesKey("epc_filter")
         val IS_DARK_MODE_KEY = androidx.datastore.preferences.core.booleanPreferencesKey("is_dark_mode")
+        val PRIMARY_COLOR_KEY = androidx.datastore.preferences.core.longPreferencesKey("primary_color")
         val DEFAULT_BASE_URL = "https://stockbotapi.technowavegroup.com/api/"
     }
 
@@ -32,6 +33,10 @@ class PreferenceManager @Inject constructor(
 
     val isDarkMode: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[IS_DARK_MODE_KEY] ?: true // Default to Dark Mode as requested before
+    }
+
+    val primaryColor: Flow<Long> = context.dataStore.data.map { preferences ->
+        preferences[PRIMARY_COLOR_KEY] ?: 0xFF00D09CL // Default to GrowwGreen
     }
 
     val deviceId: Flow<String> = context.dataStore.data.map { preferences ->
@@ -59,6 +64,12 @@ class PreferenceManager @Inject constructor(
     suspend fun saveTheme(isDark: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[IS_DARK_MODE_KEY] = isDark
+        }
+    }
+
+    suspend fun savePrimaryColor(color: Long) {
+        context.dataStore.edit { preferences ->
+            preferences[PRIMARY_COLOR_KEY] = color
         }
     }
 

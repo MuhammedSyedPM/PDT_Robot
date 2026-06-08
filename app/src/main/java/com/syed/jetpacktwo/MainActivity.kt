@@ -121,8 +121,10 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             val isDarkMode by settingsViewModel.isDarkMode.collectAsState()
+            val primaryColorLong by settingsViewModel.primaryColor.collectAsState()
+            val primaryColor = Color(primaryColorLong.toInt())
             
-            JetPackTwoTheme(darkTheme = isDarkMode) {
+            JetPackTwoTheme(darkTheme = isDarkMode, primaryColor = primaryColor) {
                 NavGraph(
                     onExit = { finish() }
                 )
@@ -147,7 +149,7 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         if (viewModel.readerStatus.value.isConnected) {
             viewModel.stopReader()
-            viewModel.disconnect()
+            // Removed viewModel.disconnect() to maintain a single connection when launching Settings Activity
         }
         super.onStop()
     }

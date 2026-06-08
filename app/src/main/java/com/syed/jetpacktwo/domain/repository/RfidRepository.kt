@@ -67,4 +67,13 @@ interface RfidRepository {
 
     /** Apply an EPC prefix filter. Only tags starting with this prefix will be scanned. Empty = no filter. */
     fun setEpcFilter(filter: String)
+
+    /** Launch power/advanced settings for the connected device (e.g., NordicSettingsActivity). */
+    fun launchPowerSettings(activity: Activity)
+
+    /** Set the transmission power level (e.g. 1-30 for Chainway, 1-300 for Zebra). */
+    fun setPowerLevel(level: Int)
+
+    /** Get the current transmission power level. */
+    fun getPowerLevel(): Int
 }

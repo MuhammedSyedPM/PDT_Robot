@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -31,10 +32,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.syed.jetpacktwo.presentation.rfid.RfidViewModel
 import com.syed.jetpacktwo.util.debouncedClickable
 import com.syed.jetpacktwo.util.rememberDebouncedClick
+import androidx.compose.ui.platform.LocalConfiguration
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,10 +58,15 @@ fun HomeScreen(
     val uploadResult by viewModel.uploadResult.collectAsState()
     val configuredDeviceName by viewModel.configuredDeviceName.collectAsState()
     
+    val configuration = LocalConfiguration.current
+    val isTablet = configuration.screenWidthDp > 600
+    
     var showExitDialog by remember { mutableStateOf(false) }
     var showClearDialog by remember { mutableStateOf(false) }
     var showUploadResultDialog by remember { mutableStateOf(false) }
     var showImpinjConfigDialog by remember { mutableStateOf(false) }
+    var showPowerDialog by remember { mutableStateOf(false) }
+    var showColorPickerDialog by remember { mutableStateOf(false) }
 
     // Handle Upload Result
     LaunchedEffect(uploadResult) {
@@ -156,6 +165,15 @@ fun HomeScreen(
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
+
+                    // Color Palette Icon
+                    IconButton(onClick = rememberDebouncedClick { showColorPickerDialog = true }) {
+                        Icon(
+                            imageVector = Icons.Default.Palette,
+                            contentDescription = "Choose Theme Color",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                     
                     Spacer(modifier = Modifier.width(4.dp))
                     
@@ -165,10 +183,21 @@ fun HomeScreen(
                         shape = CircleShape,
                         color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
                     ) {
-                        IconButton(onClick = rememberDebouncedClick { /* Settings */ }) {
+                        IconButton(onClick = rememberDebouncedClick { 
+                            val hwType = viewModel.getCurrentHardwareType()
+                            if (hwType == "NORDIC") {
+                                if (context is android.app.Activity) {
+                                    viewModel.launchPowerSettings(context)
+                                }
+                            } else if (hwType == "IMPINJ") {
+                                showImpinjConfigDialog = true
+                            } else {
+                                showPowerDialog = true
+                            }
+                        }) {
                             Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = null,
+                                imageVector = Icons.Default.Settings,
+                                contentDescription = "Power Settings",
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }
@@ -295,51 +324,92 @@ fun HomeScreen(
 
             // Responsive Action Grid
             Column(
-                modifier = Modifier.fillMaxWidth().widthIn(max = 800.dp).align(Alignment.CenterHorizontally),
+                modifier = Modifier.fillMaxWidth().widthIn(max = if (isTablet) 1200.dp else 800.dp).align(Alignment.CenterHorizontally),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    ActionCard(
-                        modifier = Modifier.weight(1f),
-                        title = "SCAN",
-                        subtitle = "Start Inventory",
-                        icon = Icons.Default.Sensors,
-                        color = MaterialTheme.colorScheme.primary,
-                        onClick = onScanClick
-                    )
-                    ActionCard(
-                        modifier = Modifier.weight(1f),
-                        title = "UPLOAD",
-                        subtitle = if (totalScannedCount > 0) "Sync Required" else "Everything Synced",
-                        icon = Icons.Default.CloudUpload,
-                        color = if (totalScannedCount > 0) Color(0xFF3182CE) else MaterialTheme.colorScheme.outline,
-                        onClick = { if (totalScannedCount > 0) viewModel.uploadTags() },
-                        badgeCount = totalScannedCount
-                    )
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    ActionCard(
-                        modifier = Modifier.weight(1f),
-                        title = "CLEAR",
-                        subtitle = "Wipe Database",
-                        icon = Icons.Default.DeleteForever,
-                        color = MaterialTheme.colorScheme.error,
-                        onClick = { showClearDialog = true }
-                    )
-                    ActionCard(
-                        modifier = Modifier.weight(1f),
-                        title = "EXIT",
-                        subtitle = "Close Session",
-                        icon = Icons.Default.ExitToApp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        onClick = { showExitDialog = true }
-                    )
+                if (isTablet) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        ActionCard(
+                            modifier = Modifier.weight(1f),
+                            title = "SCAN",
+                            subtitle = "Start Inventory",
+                            icon = Icons.Default.Sensors,
+                            color = MaterialTheme.colorScheme.primary,
+                            onClick = onScanClick
+                        )
+                        ActionCard(
+                            modifier = Modifier.weight(1f),
+                            title = "UPLOAD",
+                            subtitle = if (totalScannedCount > 0) "Sync Required" else "Everything Synced",
+                            icon = Icons.Default.CloudUpload,
+                            color = if (totalScannedCount > 0) Color(0xFF3182CE) else MaterialTheme.colorScheme.outline,
+                            onClick = { if (totalScannedCount > 0) viewModel.uploadTags() },
+                            badgeCount = totalScannedCount
+                        )
+                        ActionCard(
+                            modifier = Modifier.weight(1f),
+                            title = "CLEAR",
+                            subtitle = "Wipe Database",
+                            icon = Icons.Default.DeleteForever,
+                            color = MaterialTheme.colorScheme.error,
+                            onClick = { showClearDialog = true }
+                        )
+                        ActionCard(
+                            modifier = Modifier.weight(1f),
+                            title = "EXIT",
+                            subtitle = "Close Session",
+                            icon = Icons.Default.ExitToApp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            onClick = { showExitDialog = true }
+                        )
+                    }
+                } else {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        ActionCard(
+                            modifier = Modifier.weight(1f),
+                            title = "SCAN",
+                            subtitle = "Start Inventory",
+                            icon = Icons.Default.Sensors,
+                            color = MaterialTheme.colorScheme.primary,
+                            onClick = onScanClick
+                        )
+                        ActionCard(
+                            modifier = Modifier.weight(1f),
+                            title = "UPLOAD",
+                            subtitle = if (totalScannedCount > 0) "Sync Required" else "Everything Synced",
+                            icon = Icons.Default.CloudUpload,
+                            color = if (totalScannedCount > 0) Color(0xFF3182CE) else MaterialTheme.colorScheme.outline,
+                            onClick = { if (totalScannedCount > 0) viewModel.uploadTags() },
+                            badgeCount = totalScannedCount
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        ActionCard(
+                            modifier = Modifier.weight(1f),
+                            title = "CLEAR",
+                            subtitle = "Wipe Database",
+                            icon = Icons.Default.DeleteForever,
+                            color = MaterialTheme.colorScheme.error,
+                            onClick = { showClearDialog = true }
+                        )
+                        ActionCard(
+                            modifier = Modifier.weight(1f),
+                            title = "EXIT",
+                            subtitle = "Close Session",
+                            icon = Icons.Default.ExitToApp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            onClick = { showExitDialog = true }
+                        )
+                    }
                 }
             }
             
@@ -431,6 +501,8 @@ if (showUploadResultDialog) {
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     TextButton(onClick = { 
+                        showExitDialog = false
+                        viewModel.dispose()
                         if (context is android.app.Activity) {
                             context.finish()
                         }
@@ -442,6 +514,106 @@ if (showUploadResultDialog) {
             dismissButton = {
                 TextButton(onClick = { showExitDialog = false }) {
                     Text("CANCEL")
+                }
+            }
+        )
+    }
+
+    // Color Picker Dialog
+    if (showColorPickerDialog) {
+        AlertDialog(
+            onDismissRequest = { showColorPickerDialog = false },
+            title = { 
+                Text(text = "Select Theme Color", fontWeight = FontWeight.Bold) 
+            },
+            text = {
+                val colors = listOf(
+                    Color(0xFF00D09C), // Groww Green
+                    Color(0xFF2196F3), // Blue
+                    Color(0xFF3F51B5), // Indigo
+                    Color(0xFF673AB7), // Purple
+                    Color(0xFFE91E63), // Pink
+                    Color(0xFFF44336), // Red
+                    Color(0xFFFF5722), // Deep Orange
+                    Color(0xFFFF9800), // Orange
+                    Color(0xFFFFC107), // Amber
+                    Color(0xFF4CAF50), // Green
+                    Color(0xFF009688), // Teal
+                    Color(0xFF00BCD4), // Cyan
+                    Color(0xFF607D8B), // Blue Grey
+                    Color(0xFF795548), // Brown
+                    Color(0xFF111111)  // Almost Black
+                )
+                androidx.compose.foundation.lazy.grid.LazyVerticalGrid(
+                    columns = androidx.compose.foundation.lazy.grid.GridCells.Fixed(5),
+                    modifier = Modifier.fillMaxWidth().height(180.dp).padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(colors.size) { index ->
+                        val color = colors[index]
+                        Surface(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(CircleShape)
+                                .clickable {
+                                    settingsViewModel.setPrimaryColor(color.toArgb().toLong())
+                                    showColorPickerDialog = false
+                                },
+                            color = color,
+                            border = androidx.compose.foundation.BorderStroke(
+                                width = 2.dp,
+                                color = if (MaterialTheme.colorScheme.primary == color) 
+                                    MaterialTheme.colorScheme.onSurface 
+                                else Color.Transparent
+                            )
+                        ) {}
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showColorPickerDialog = false }) {
+                    Text("Close")
+                }
+            }
+        )
+    }
+
+    if (showPowerDialog) {
+        val hwType = viewModel.getCurrentHardwareType()
+        val currentPower = viewModel.getPowerLevel()
+        var selectedPower by remember { mutableStateOf(currentPower.toString()) }
+        val maxPower = if (hwType == "ZEBRA") 300 else 30
+        
+        AlertDialog(
+            onDismissRequest = { showPowerDialog = false },
+            title = { Text(if (hwType == "ZEBRA") "Zebra Power Settings" else "Chainway Power Settings", fontWeight = FontWeight.Bold) },
+            text = {
+                Column {
+                    Text("Select power level (1-$maxPower):")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = selectedPower,
+                        onValueChange = { selectedPower = it },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                Button(onClick = { 
+                    val p = selectedPower.toIntOrNull() ?: currentPower
+                    val clamped = p.coerceIn(1, maxPower)
+                    viewModel.setPowerLevel(clamped)
+                    showPowerDialog = false
+                }) {
+                    Text("Save")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showPowerDialog = false }) {
+                    Text("Cancel")
                 }
             }
         )

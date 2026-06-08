@@ -44,6 +44,9 @@ fun ScanScreen(
     val existingTagEpcs by viewModel.existingTagEpcs.collectAsState()
     val isDarkMode by settingsViewModel.isDarkMode.collectAsState()
     
+    val configuration = androidx.compose.ui.platform.LocalConfiguration.current
+    val isTablet = configuration.screenWidthDp > 600
+    
     // For this implementation, I'll use a local state to manage the button toggle and count persistence
     var localIsScanning by remember { mutableStateOf(false) }
     var isStopping by remember { mutableStateOf(false) }
@@ -78,6 +81,66 @@ fun ScanScreen(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
             )
+        },
+        floatingActionButton = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Button(
+                    onClick = rememberDebouncedClick {
+                        if (!isStopping) {
+                            if (localIsScanning) {
+                                scope.launch {
+                                    isStopping = true
+                                    viewModel.stopReader()
+                                    viewModel.saveCurrentTags()
+                                    viewModel.clearTagReads()
+                                    kotlinx.coroutines.delay(1200) // 1.2 second loader
+                                    localIsScanning = false
+                                    isStopping = false
+                                }
+                            } else {
+                                viewModel.clearTagReads()
+                                viewModel.startReader()
+                                localIsScanning = true
+                            }
+                        }
+                    },
+                    modifier = Modifier.size(if (isTablet) 100.dp else 80.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isStopping || localIsScanning) Color.Red else MaterialTheme.colorScheme.primary,
+                        disabledContainerColor = if (isStopping) Color.Red.copy(alpha = 0.8f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                    ),
+                    shape = CircleShape,
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 8.dp),
+                    enabled = !isStopping
+                ) {
+                    if (isStopping) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(if (isTablet) 40.dp else 32.dp),
+                            color = Color.White,
+                            strokeWidth = 4.dp
+                        )
+                    } else {
+                        Icon(
+                            imageVector = if (localIsScanning) Icons.Default.Stop else Icons.Default.PlayArrow,
+                            contentDescription = if (localIsScanning) "Stop" else "Start",
+                            modifier = Modifier.size(if (isTablet) 48.dp else 40.dp),
+                            tint = Color.White
+                        )
+                    }
+                }
+                
+                Text(
+                    text = when {
+                        isStopping -> "STOPPING..."
+                        localIsScanning -> "STOP"
+                        else -> "START"
+                    },
+                    color = if (isStopping || localIsScanning) Color.Red else MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(top = 8.dp),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp
+                )
+            }
         }
     ) { padding ->
         Box(
@@ -101,77 +164,21 @@ fun ScanScreen(
                 Text(
                     text = "Total Scanned",
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-                    fontSize = 16.sp,
+                    fontSize = if (isTablet) 24.sp else 16.sp,
                     fontWeight = FontWeight.Medium
                 )
                 
                 Text(
                     text = "$newTagsCount",
                     color = MaterialTheme.colorScheme.primary,
-                    fontSize = if (newTagsCount > 999) 80.sp else 120.sp, // Scale down for large numbers
+                    fontSize = if (isTablet) {
+                        if (newTagsCount > 999) 160.sp else 240.sp
+                    } else {
+                        if (newTagsCount > 999) 80.sp else 120.sp
+                    },
                     fontWeight = FontWeight.ExtraBold
                 )
 
-                Spacer(modifier = Modifier.height(48.dp))
-
-                // Core Toggle Button
-                Button(
-                    onClick = rememberDebouncedClick {
-                        if (!isStopping) {
-                            if (localIsScanning) {
-                                scope.launch {
-                                    isStopping = true
-                                    viewModel.stopReader()
-                                    viewModel.saveCurrentTags()
-                                    viewModel.clearTagReads()
-                                    kotlinx.coroutines.delay(1200) // 1.2 second loader
-                                    localIsScanning = false
-                                    isStopping = false
-                                }
-                            } else {
-                                viewModel.clearTagReads()
-                                viewModel.startReader()
-                                localIsScanning = true
-                            }
-                        }
-                    },
-                    modifier = Modifier.size(120.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isStopping || localIsScanning) Color.Red else MaterialTheme.colorScheme.primary,
-                        disabledContainerColor = if (isStopping) Color.Red.copy(alpha = 0.8f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
-                    ),
-                    shape = CircleShape,
-                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 8.dp),
-                    enabled = !isStopping
-                ) {
-                    if (isStopping) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(48.dp),
-                            color = Color.White,
-                            strokeWidth = 4.dp
-                        )
-                    } else {
-                        Icon(
-                            imageVector = if (localIsScanning) Icons.Default.Stop else Icons.Default.PlayArrow,
-                            contentDescription = if (localIsScanning) "Stop" else "Start",
-                            modifier = Modifier.size(48.dp),
-                            tint = Color.White
-                        )
-                    }
-                }
-                
-                Text(
-                    text = when {
-                        isStopping -> "STOPPING..."
-                        localIsScanning -> "STOP SCANNING"
-                        else -> "START SCANNING"
-                    },
-                    color = if (isStopping || localIsScanning) Color.Red else MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(top = 16.dp),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
-                )
-                
                 Spacer(modifier = Modifier.height(100.dp)) // Space for the status indicator
             }
             

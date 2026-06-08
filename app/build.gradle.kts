@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "com.syed.jetpacktwo"
-        minSdk = 26
+        minSdk = 25
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"

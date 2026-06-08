@@ -67,6 +67,10 @@ class ChainwayRfidRepositoryImpl @Inject constructor(
     }
 
     override fun connectToReader(scannerSpec: String) {
+        if (_readerStatus.value.isConnected) {
+            Log.d("ChainwayRepo", "Already connected, returning early")
+            return
+        }
         // For Chainway, "connecting" means initializing the hardware
         scope.launch {
             try {
@@ -198,6 +202,21 @@ class ChainwayRfidRepositoryImpl @Inject constructor(
 
     override fun switchHardware(type: String) { /* Master handles this */ }
     override fun getCurrentType(): String = "CHAINWAY"
+
+    override fun launchPowerSettings(activity: Activity) {
+        android.widget.Toast.makeText(activity, "Power settings not available for Chainway", android.widget.Toast.LENGTH_SHORT).show()
+    }
+
+    override fun setPowerLevel(level: Int) {
+        val prefs = context.getSharedPreferences("chainway_prefs", Context.MODE_PRIVATE)
+        prefs.edit().putInt("power_level", level).apply()
+        mReader?.setPower(level)
+    }
+
+    override fun getPowerLevel(): Int {
+        val prefs = context.getSharedPreferences("chainway_prefs", Context.MODE_PRIVATE)
+        return prefs.getInt("power_level", 30)
+    }
 
     override fun dispose() {
         disconnectReader()

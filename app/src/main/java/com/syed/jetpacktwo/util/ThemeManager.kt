@@ -14,10 +14,18 @@ class ThemeManager @Inject constructor(
     private val _isDarkMode = MutableStateFlow(true)
     val isDarkMode: StateFlow<Boolean> = _isDarkMode
 
+    private val _primaryColor = MutableStateFlow(0xFF00D09CL)
+    val primaryColor: StateFlow<Long> = _primaryColor
+
     init {
         scope.launch {
             preferenceManager.isDarkMode.collect {
                 _isDarkMode.value = it
+            }
+        }
+        scope.launch {
+            preferenceManager.primaryColor.collect {
+                _primaryColor.value = it
             }
         }
     }
@@ -34,6 +42,13 @@ class ThemeManager @Inject constructor(
         _isDarkMode.value = enabled
         scope.launch {
             preferenceManager.saveTheme(enabled)
+        }
+    }
+
+    fun setPrimaryColor(color: Long) {
+        _primaryColor.value = color
+        scope.launch {
+            preferenceManager.savePrimaryColor(color)
         }
     }
 }

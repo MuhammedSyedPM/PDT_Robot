@@ -11,8 +11,13 @@ class SettingsViewModel @Inject constructor(
     private val themeManager: ThemeManager
 ) : ViewModel() {
     val isDarkMode: StateFlow<Boolean> = themeManager.isDarkMode
+    val primaryColor: StateFlow<Long> = themeManager.primaryColor
 
     fun toggleTheme() {
         themeManager.toggleTheme()
+    }
+
+    fun setPrimaryColor(color: Long) {
+        themeManager.setPrimaryColor(color)
     }
 }
