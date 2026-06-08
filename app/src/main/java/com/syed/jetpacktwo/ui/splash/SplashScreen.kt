@@ -36,7 +36,7 @@ fun SplashScreen(
         )
     )
 
-    // Rotation for a 'tech' feel
+    // Rotation for a 'tech' feel // hi
     val rotation by animateFloatAsState(
         targetValue = if (startAnimation) 360f else 0f,
         animationSpec = tween(2000, easing = LinearOutSlowInEasing)
