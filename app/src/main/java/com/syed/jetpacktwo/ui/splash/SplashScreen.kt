@@ -164,7 +164,7 @@ fun SplashScreen(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "ZEBRA • NORDIC • CHAINWAY",
+                text = "IMPINJ • ZEBRA • NORDIC • CHAINWAY",
                 color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.ExtraBold,

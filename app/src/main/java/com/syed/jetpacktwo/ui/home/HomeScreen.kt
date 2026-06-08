@@ -57,6 +57,7 @@ fun HomeScreen(
     var showExitDialog by remember { mutableStateOf(false) }
     var showClearDialog by remember { mutableStateOf(false) }
     var showUploadResultDialog by remember { mutableStateOf(false) }
+    var showImpinjConfigDialog by remember { mutableStateOf(false) }
 
     // Handle Upload Result
     LaunchedEffect(uploadResult) {
@@ -256,7 +257,9 @@ fun HomeScreen(
                             
                             TextButton(
                                 onClick = rememberDebouncedClick { 
-                                    if (context is android.app.Activity) {
+                                    if (viewModel.getCurrentHardwareType() == "IMPINJ") {
+                                        showImpinjConfigDialog = true
+                                    } else if (context is android.app.Activity) {
                                         viewModel.launchDeviceList(context)
                                     }
                                 }
@@ -443,6 +446,18 @@ if (showUploadResultDialog) {
             }
         )
     }
+
+    if (showImpinjConfigDialog) {
+        ImpinjConfigDialog(
+            initialIp = viewModel.scannerSpec.collectAsState().value,
+            viewModel = viewModel,
+            onDismiss = { showImpinjConfigDialog = false },
+            onConnect = { ip -> 
+                showImpinjConfigDialog = false
+                viewModel.connect(ip)
+            }
+        )
+    }
 }
 
 @Composable
@@ -511,4 +526,169 @@ fun ActionCard(
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ImpinjConfigDialog(
+    initialIp: String,
+    viewModel: RfidViewModel,
+    onDismiss: () -> Unit,
+    onConnect: (String) -> Unit
+) {
+    var ipAddress by remember { mutableStateOf(initialIp) }
+    var config by remember { 
+        mutableStateOf(
+            viewModel.getImpinjConfig()?.copy() ?: com.syed.jetpacktwo.data.repository.ImpinjConfig(
+                readerAddress = initialIp,
+                antennaConfig = (1..4).map { com.syed.jetpacktwo.data.repository.AntennaConfig(it, 30.0, -70.0, true) }
+            )
+        ) 
+    }
+    var selectedPort by remember { mutableStateOf(1) }
+    
+    val currentAntenna = config.antennaConfig.find { it.antennaPort == selectedPort } 
+        ?: com.syed.jetpacktwo.data.repository.AntennaConfig(selectedPort, 30.0, -70.0, true)
+    
+    var expandedPort by remember { mutableStateOf(false) }
+    var expandedTx by remember { mutableStateOf(false) }
+    var expandedRx by remember { mutableStateOf(false) }
+    
+    val txPowers = (10..30).map { it.toDouble() }
+    val rxSensitivities = (-80..-30).map { it.toDouble() }
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Reader Configuration") },
+        text = {
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                OutlinedTextField(
+                    value = ipAddress,
+                    onValueChange = { ipAddress = it },
+                    label = { Text("Reader IP Address") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                // Antenna Port Dropdown
+                ExposedDropdownMenuBox(
+                    expanded = expandedPort,
+                    onExpandedChange = { expandedPort = it }
+                ) {
+                    OutlinedTextField(
+                        value = "Antenna Port $selectedPort",
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Choose Antenna") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedPort) },
+                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expandedPort,
+                        onDismissRequest = { expandedPort = false }
+                    ) {
+                        (1..4).forEach { port ->
+                            DropdownMenuItem(
+                                text = { Text("Antenna Port $port") },
+                                onClick = { 
+                                    selectedPort = port
+                                    expandedPort = false 
+                                }
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                // Tx Power Dropdown
+                ExposedDropdownMenuBox(
+                    expanded = expandedTx,
+                    onExpandedChange = { expandedTx = it }
+                ) {
+                    OutlinedTextField(
+                        value = "${currentAntenna.txPower} dBm",
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("TX Power") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedTx) },
+                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expandedTx,
+                        onDismissRequest = { expandedTx = false }
+                    ) {
+                        txPowers.forEach { pwr ->
+                            DropdownMenuItem(
+                                text = { Text("$pwr dBm") },
+                                onClick = { 
+                                    val newConfig = config.antennaConfig.map { if(it.antennaPort == selectedPort) it.copy(txPower = pwr) else it }
+                                    config = config.copy(antennaConfig = newConfig)
+                                    expandedTx = false 
+                                }
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                // Rx Sensitivity Dropdown
+                ExposedDropdownMenuBox(
+                    expanded = expandedRx,
+                    onExpandedChange = { expandedRx = it }
+                ) {
+                    OutlinedTextField(
+                        value = "${currentAntenna.rxSensitivity} dBm",
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("RX Sensitivity") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedRx) },
+                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expandedRx,
+                        onDismissRequest = { expandedRx = false }
+                    ) {
+                        rxSensitivities.forEach { rx ->
+                            DropdownMenuItem(
+                                text = { Text("$rx dBm") },
+                                onClick = { 
+                                    val newConfig = config.antennaConfig.map { if(it.antennaPort == selectedPort) it.copy(rxSensitivity = rx) else it }
+                                    config = config.copy(antennaConfig = newConfig)
+                                    expandedRx = false 
+                                }
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("Enable Antenna", fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.weight(1f))
+                    Switch(
+                        checked = currentAntenna.isEnabled,
+                        onCheckedChange = { checked -> 
+                            val newConfig = config.antennaConfig.map { if(it.antennaPort == selectedPort) it.copy(isEnabled = checked) else it }
+                            config = config.copy(antennaConfig = newConfig)
+                        }
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            Button(onClick = { 
+                config.readerAddress = ipAddress
+                viewModel.saveImpinjConfig(config)
+                onConnect(ipAddress) 
+            }) {
+                Text("SAVE & CONNECT")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("CANCEL")
+            }
+        }
+    )
 }

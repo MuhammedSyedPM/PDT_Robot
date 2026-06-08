@@ -474,7 +474,7 @@ fun ConfigDialog(
                     }
                     "HARDWARE" -> {
                         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                            listOf("NORDIC", "ZEBRA", "CHAINWAY").forEach { type ->
+                            listOf("NORDIC", "ZEBRA", "CHAINWAY", "IMPINJ").forEach { type ->
                                 val isSelected = hardwareType == type
                                 Surface(
                                     modifier = Modifier

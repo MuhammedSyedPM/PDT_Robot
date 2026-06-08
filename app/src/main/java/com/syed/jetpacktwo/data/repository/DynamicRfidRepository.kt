@@ -23,7 +23,8 @@ class DynamicRfidRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val nordicRepo: RfidRepositoryImpl,
     private val chainwayRepo: ChainwayRfidRepositoryImpl,
-    private val zebraRepo: ZebraRfidRepositoryImpl
+    private val zebraRepo: ZebraRfidRepositoryImpl,
+    private val impinjRepo: ImpinjRfidRepositoryImpl
 ) : RfidRepository {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
@@ -69,6 +70,7 @@ class DynamicRfidRepository @Inject constructor(
             "ZEBRA" -> zebraRepo
             "CHAINWAY" -> chainwayRepo
             "NORDIC" -> nordicRepo
+            "IMPINJ" -> impinjRepo
             else -> nordicRepo
         }
     }
@@ -113,11 +115,13 @@ class DynamicRfidRepository @Inject constructor(
         nordicRepo.dispose()
         chainwayRepo.dispose()
         zebraRepo.dispose()
+        impinjRepo.dispose()
     }
 
     override fun setEpcFilter(filter: String) {
         nordicRepo.setEpcFilter(filter)
         chainwayRepo.setEpcFilter(filter)
         zebraRepo.setEpcFilter(filter)
+        impinjRepo.setEpcFilter(filter)
     }
 }

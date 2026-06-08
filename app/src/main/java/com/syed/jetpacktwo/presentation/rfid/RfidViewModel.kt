@@ -32,6 +32,7 @@ import com.syed.jetpacktwo.data.local.PreferenceManager
 @HiltViewModel
 class RfidViewModel @Inject constructor(
     private val rfidRepository: RfidRepository,
+    private val impinjRepo: com.syed.jetpacktwo.data.repository.ImpinjRfidRepositoryImpl,
     private val scannedTagDao: com.syed.jetpacktwo.data.local.db.ScannedTagDao,
     private val syncRepository: SyncRepository,
     private val preferenceManager: PreferenceManager
@@ -143,6 +144,14 @@ class RfidViewModel @Inject constructor(
 
     fun resetUploadResult() {
         _uploadResult.value = null
+    }
+
+    fun getImpinjConfig(): com.syed.jetpacktwo.data.repository.ImpinjConfig? {
+        return impinjRepo.currentConfig
+    }
+
+    fun saveImpinjConfig(config: com.syed.jetpacktwo.data.repository.ImpinjConfig) {
+        impinjRepo.saveConfig(config)
     }
 
     fun dispose() = rfidRepository.dispose()
