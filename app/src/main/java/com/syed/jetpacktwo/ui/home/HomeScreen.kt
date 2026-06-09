@@ -345,7 +345,7 @@ fun HomeScreen(
                             title = "UPLOAD",
                             subtitle = if (totalScannedCount > 0) "Sync Required" else "Everything Synced",
                             icon = Icons.Default.CloudUpload,
-                            color = if (totalScannedCount > 0) Color(0xFF3182CE) else MaterialTheme.colorScheme.outline,
+                            color = if (totalScannedCount > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
                             onClick = { if (totalScannedCount > 0) viewModel.uploadTags() },
                             badgeCount = totalScannedCount
                         )
@@ -362,7 +362,7 @@ fun HomeScreen(
                             title = "EXIT",
                             subtitle = "Close Session",
                             icon = Icons.Default.ExitToApp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            color = MaterialTheme.colorScheme.primary,
                             onClick = { showExitDialog = true }
                         )
                     }
@@ -384,7 +384,7 @@ fun HomeScreen(
                             title = "UPLOAD",
                             subtitle = if (totalScannedCount > 0) "Sync Required" else "Everything Synced",
                             icon = Icons.Default.CloudUpload,
-                            color = if (totalScannedCount > 0) Color(0xFF3182CE) else MaterialTheme.colorScheme.outline,
+                            color = if (totalScannedCount > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
                             onClick = { if (totalScannedCount > 0) viewModel.uploadTags() },
                             badgeCount = totalScannedCount
                         )
@@ -406,7 +406,7 @@ fun HomeScreen(
                             title = "EXIT",
                             subtitle = "Close Session",
                             icon = Icons.Default.ExitToApp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            color = MaterialTheme.colorScheme.primary,
                             onClick = { showExitDialog = true }
                         )
                     }
@@ -642,22 +642,37 @@ fun ActionCard(
     modifier: Modifier = Modifier,
     badgeCount: Int = 0
 ) {
+    // CRED-inspired sharp, cute, and premium design
     Surface(
         modifier = modifier
             .fillMaxWidth()
             .debouncedClickable { onClick() },
         color = MaterialTheme.colorScheme.surface,
-        shape = RoundedCornerShape(24.dp),
-        shadowElevation = 2.dp
+        shape = RoundedCornerShape(12.dp), // Sharper corners
+        border = androidx.compose.foundation.BorderStroke(1.dp, color.copy(alpha = 0.4f)), // Glowing neon-like border
+        shadowElevation = 6.dp
     ) {
-        Box(modifier = Modifier.padding(16.dp)) {
+        Box(
+            modifier = Modifier
+                .background(
+                    Brush.linearGradient(
+                        colors = listOf(
+                            color.copy(alpha = 0.08f),
+                            Color.Transparent
+                        )
+                    )
+                )
+                .padding(16.dp)
+        ) {
             Column(
                 verticalArrangement = Arrangement.Center
             ) {
+                // Sharp icon container
                 Surface(
-                    modifier = Modifier.size(48.dp),
-                    color = color.copy(alpha = 0.1f),
-                    shape = CircleShape
+                    modifier = Modifier.size(46.dp),
+                    color = color.copy(alpha = 0.15f),
+                    shape = RoundedCornerShape(10.dp),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, color.copy(alpha = 0.3f))
                 ) {
                     Icon(
                         imageVector = icon,
@@ -668,31 +683,34 @@ fun ActionCard(
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = title,
+                    text = title.uppercase(),
                     color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 15.sp,
+                    letterSpacing = 1.sp
                 )
                 Text(
                     text = subtitle,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontSize = 12.sp
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium
                 )
             }
 
-            // Notification Badge (Pill Style)
+            // Notification Badge (Sharp Pill Style)
             if (badgeCount > 0) {
                 Surface(
-                    modifier = Modifier.align(Alignment.TopEnd),
-                    color = Color.Red,
-                    shape = RoundedCornerShape(12.dp)
+                    modifier = Modifier.align(Alignment.TopEnd).offset(x = 6.dp, y = (-6).dp),
+                    color = com.syed.jetpacktwo.ui.theme.GrowwGreen,
+                    shape = RoundedCornerShape(6.dp),
+                    shadowElevation = 4.dp
                 ) {
                     Text(
                         text = badgeCount.toString(),
-                        color = Color.White,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                        color = Color(0xFF111111), // Sharp, highly readable dark text on green background
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                     )
                 }
             }
