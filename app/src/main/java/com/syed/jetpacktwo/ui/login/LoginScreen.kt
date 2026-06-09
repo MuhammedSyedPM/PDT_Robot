@@ -23,10 +23,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -46,7 +48,8 @@ import com.syed.jetpacktwo.util.rememberDebouncedClick
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
     onExit: () -> Unit,
-    viewModel: LoginViewModel = hiltViewModel()
+    viewModel: LoginViewModel = hiltViewModel(),
+    settingsViewModel: com.syed.jetpacktwo.presentation.settings.SettingsViewModel = hiltViewModel()
 ) {
     val username by viewModel.username.collectAsState()
     val password by viewModel.password.collectAsState()
@@ -89,226 +92,103 @@ fun LoginScreen(
         startAnimation = true
     }
 
-    Box(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        contentAlignment = Alignment.Center
+            .background(MaterialTheme.colorScheme.background)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Spacer(modifier = Modifier.height(32.dp))
-            
-            // Animated Logo Section
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .scale(logoScale)
-                    .alpha(contentAlpha)
-            ) {
-                Surface(
-                    modifier = Modifier.size(80.dp),
-                    shape = CircleShape,
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+        val isTablet = maxWidth > 600.dp
+        
+        if (isTablet) {
+            Row(modifier = Modifier.fillMaxSize()) {
+                // Left side: 60% Image
+                Box(
+                    modifier = Modifier
+                        .weight(0.6f)
+                        .fillMaxHeight(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.PrecisionManufacturing,
-                        contentDescription = null,
-                        modifier = Modifier.padding(16.dp).fillMaxSize(),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Row(horizontalArrangement = Arrangement.Center) {
-                    "STOCK EYE".forEachIndexed { index, char ->
-                        val charAlpha by animateFloatAsState(
-                            targetValue = if (startAnimation) 1f else 0f,
-                            animationSpec = tween(
-                                durationMillis = 400,
-                                delayMillis = 400 + (index * 80),
-                                easing = LinearOutSlowInEasing
-                            ),
-                            label = "char_alpha_$index"
-                        )
-                        val charScale by animateFloatAsState(
-                            targetValue = if (startAnimation) 1f else 0.4f,
-                            animationSpec = spring(
-                                dampingRatio = 0.6f,
-                                stiffness = Spring.StiffnessLow
-                            ),
-                            label = "char_scale_$index"
-                        )
-                        Text(
-                            text = char.toString(),
-                            color = MaterialTheme.colorScheme.onBackground,
-                            fontSize = 34.sp,
-                            fontWeight = FontWeight.Black,
-                            modifier = Modifier
-                                .graphicsLayer(
-                                    alpha = charAlpha,
-                                    scaleX = charScale,
-                                    scaleY = charScale
-                                ),
-                            letterSpacing = 1.sp
-                        )
-                    }
-                }
-
-                Row(horizontalArrangement = Arrangement.Center) {
-                    "SMART STOCK TAKE SYSTEM".forEachIndexed { index, char ->
-                        val charAlpha by animateFloatAsState(
-                            targetValue = if (startAnimation) 1f else 0f,
-                            animationSpec = tween(
-                                durationMillis = 300,
-                                delayMillis = 1000 + (index * 30),
-                                easing = LinearOutSlowInEasing
-                            ),
-                            label = "sub_alpha_$index"
-                        )
-                        Text(
-                            text = char.toString(),
-                            color = MaterialTheme.colorScheme.primary,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.graphicsLayer(alpha = charAlpha),
-                            letterSpacing = if (char == ' ') 3.sp else 0.5.sp
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(48.dp))
-
-            // Animated Login Card
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .widthIn(max = 480.dp)
-                    .offset(y = cardOffsetY)
-                    .alpha(contentAlpha),
-                color = MaterialTheme.colorScheme.surface,
-                shape = RoundedCornerShape(32.dp),
-                shadowElevation = 4.dp,
-                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))
-            ) {
-                Column(
-                    modifier = Modifier.padding(24.dp),
-                    verticalArrangement = Arrangement.spacedBy(20.dp)
-                ) {
-                    Text(
-                        text = "Sign In",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    
-                    OutlinedTextField(
-                        value = username,
-                        onValueChange = { viewModel.onUsernameChange(it) },
-                        label = { Text("Username") },
-                        modifier = Modifier.fillMaxWidth(),
-                        leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
-                            focusedLabelColor = MaterialTheme.colorScheme.primary
-                        ),
-                        shape = RoundedCornerShape(16.dp),
-                        singleLine = true
-                    )
-
-                    OutlinedTextField(
-                        value = password,
-                        onValueChange = { viewModel.onPasswordChange(it) },
-                        label = { Text("Password") },
-                        modifier = Modifier.fillMaxWidth(),
-                        leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
-                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                        trailingIcon = {
-                            val image = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
-                            IconButton(onClick = rememberDebouncedClick { passwordVisible = !passwordVisible }) {
-                                Icon(imageVector = image, contentDescription = null)
-                            }
-                        },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
-                            focusedLabelColor = MaterialTheme.colorScheme.primary
-                        ),
-                        shape = RoundedCornerShape(16.dp),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        singleLine = true
-                    )
-
-                    Button(
-                        onClick = rememberDebouncedClick { viewModel.login() },
+                    androidx.compose.foundation.Image(
+                        painter = androidx.compose.ui.res.painterResource(id = com.syed.jetpacktwo.R.drawable.splsh_image),
+                        contentDescription = "Login Image",
+                        contentScale = androidx.compose.ui.layout.ContentScale.Crop, 
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary
-                        ),
-                        enabled = !isLoading
-                    ) {
-                        if (isLoading) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                strokeWidth = 2.dp
-                            )
-                        } else {
-                            Text("LOGIN", fontWeight = FontWeight.Bold, fontSize = 16.sp, letterSpacing = 1.sp)
-                        }
-                    }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        TextButton(onClick = rememberDebouncedClick { showConfigDialog = true }) {
-                            Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(18.dp))
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text("CONFIG", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-                        }
-
-                        TextButton(onClick = rememberDebouncedClick { onExit() }) {
-                            Icon(Icons.Default.ExitToApp, contentDescription = null, modifier = Modifier.size(18.dp))
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text("EXIT", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-                        }
-                    }
+                            .fillMaxSize()
+                            .alpha(contentAlpha),
+                        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.35f),
+                            androidx.compose.ui.graphics.BlendMode.SrcAtop
+                        )
+                    )
                 }
-            }
 
-            // Animated Error Message
-            AnimatedVisibility(
-                visible = loginResult?.isFailure == true,
-                enter = fadeIn() + expandVertically(),
-                exit = fadeOut() + shrinkVertically()
-            ) {
-                loginResult?.exceptionOrNull()?.let {
-                    Text(
-                        text = it.message ?: "Login failed",
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(top = 24.dp),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium,
-                        textAlign = TextAlign.Center
+                // Right side: 40% Form
+                Box(
+                    modifier = Modifier
+                        .weight(0.4f)
+                        .fillMaxHeight(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    LoginFormContent(
+                        viewModel = viewModel,
+                        username = username,
+                        password = password,
+                        isLoading = isLoading,
+                        loginResult = loginResult,
+                        passwordVisible = passwordVisible,
+                        onPasswordVisibleChange = { passwordVisible = it },
+                        showConfigDialog = { showConfigDialog = true },
+                        onExit = onExit,
+                        logoScale = logoScale,
+                        contentAlpha = contentAlpha,
+                        cardOffsetY = cardOffsetY,
+                        startAnimation = startAnimation
                     )
                 }
             }
-            
-            Spacer(modifier = Modifier.height(32.dp))
+        } else {
+            // Mobile view
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                // Mobile image background
+                androidx.compose.foundation.Image(
+                    painter = androidx.compose.ui.res.painterResource(id = com.syed.jetpacktwo.R.drawable.splsh_image),
+                    contentDescription = "Login Image",
+                    contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .alpha(contentAlpha),
+                    colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.25f),
+                        androidx.compose.ui.graphics.BlendMode.SrcAtop
+                    )
+                )
+
+                // Translucent dim over the image
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.7f))
+                )
+                
+                LoginFormContent(
+                    viewModel = viewModel,
+                    username = username,
+                    password = password,
+                    isLoading = isLoading,
+                    loginResult = loginResult,
+                    passwordVisible = passwordVisible,
+                    onPasswordVisibleChange = { passwordVisible = it },
+                    showConfigDialog = { showConfigDialog = true },
+                    onExit = onExit,
+                    logoScale = logoScale,
+                    contentAlpha = contentAlpha,
+                    cardOffsetY = cardOffsetY,
+                    startAnimation = startAnimation
+                )
+            }
         }
     }
 
@@ -328,7 +208,8 @@ fun LoginScreen(
             epcFilter = viewModel.epcFilter.collectAsState().value,
             onSaveFilter = { viewModel.saveEpcFilter(it) },
             hardwareType = viewModel.hardwareType.collectAsState().value,
-            onHardwareTypeSelect = { viewModel.onHardwareTypeSelect(it) }
+            onHardwareTypeSelect = { viewModel.onHardwareTypeSelect(it) },
+            settingsViewModel = settingsViewModel
         )
     }
 }
@@ -348,9 +229,10 @@ fun ConfigDialog(
     epcFilter: String,
     onSaveFilter: (String) -> Unit,
     hardwareType: String,
-    onHardwareTypeSelect: (String) -> Unit
+    onHardwareTypeSelect: (String) -> Unit,
+    settingsViewModel: com.syed.jetpacktwo.presentation.settings.SettingsViewModel
 ) {
-    var configMode by remember { mutableStateOf("MENU") } // MENU, URL, DEVICE, FILTER, HARDWARE
+    var configMode by remember { mutableStateOf("MENU") } // MENU, URL, DEVICE, FILTER, HARDWARE, THEME
     var currentFilterText by remember { mutableStateOf(epcFilter) }
     
     // Update local state when prop changes
@@ -377,6 +259,7 @@ fun ConfigDialog(
                         "DEVICE" -> "Device Settings"
                         "FILTER" -> "EPC Filter Settings"
                         "HARDWARE" -> "Hardware Type"
+                        "THEME" -> "Theme Settings"
                         else -> "System Configuration"
                     },
                     fontSize = 22.sp,
@@ -411,6 +294,11 @@ fun ConfigDialog(
                                 title = "Hardware Provider",
                                 icon = Icons.Default.DeveloperBoard,
                                 onClick = { configMode = "HARDWARE" }
+                            )
+                            ConfigMenuButton(
+                                title = "Theme Settings",
+                                icon = Icons.Default.Palette,
+                                onClick = { configMode = "THEME" }
                             )
                         }
                     }
@@ -474,7 +362,7 @@ fun ConfigDialog(
                     }
                     "HARDWARE" -> {
                         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                            listOf("NORDIC", "ZEBRA", "CHAINWAY", "IMPINJ").forEach { type ->
+                            listOf("NORDIC", "ZEBRA", "ZEBRA FIXED", "CHAINWAY", "IMPINJ").forEach { type ->
                                 val isSelected = hardwareType == type
                                 Surface(
                                     modifier = Modifier
@@ -503,6 +391,67 @@ fun ConfigDialog(
                             }
                         }
                     }
+                    "THEME" -> {
+                        val isDarkMode by settingsViewModel.isDarkMode.collectAsState()
+                        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text("Dark Mode", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                                Switch(
+                                    checked = isDarkMode,
+                                    onCheckedChange = { settingsViewModel.toggleTheme() }
+                                )
+                            }
+                            
+                            Text("Primary Color", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                            
+                            val colors = listOf(
+                                Color(0xFF00D09C), // Groww Green
+                                Color(0xFF2196F3), // Blue
+                                Color(0xFF3F51B5), // Indigo
+                                Color(0xFF673AB7), // Purple
+                                Color(0xFFE91E63), // Pink
+                                Color(0xFFF44336), // Red
+                                Color(0xFFFF5722), // Deep Orange
+                                Color(0xFFFF9800), // Orange
+                                Color(0xFFFFC107), // Amber
+                                Color(0xFF4CAF50), // Green
+                                Color(0xFF009688), // Teal
+                                Color(0xFF00BCD4), // Cyan
+                                Color(0xFF607D8B), // Blue Grey
+                                Color(0xFF795548), // Brown
+                                Color(0xFF111111)  // Almost Black
+                            )
+                            androidx.compose.foundation.lazy.grid.LazyVerticalGrid(
+                                columns = androidx.compose.foundation.lazy.grid.GridCells.Fixed(5),
+                                modifier = Modifier.fillMaxWidth().height(180.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                items(colors.size) { index ->
+                                    val color = colors[index]
+                                    Surface(
+                                        modifier = Modifier
+                                            .size(40.dp)
+                                            .clip(CircleShape)
+                                            .clickable {
+                                                settingsViewModel.setPrimaryColor(color.toArgb().toLong())
+                                            },
+                                        color = color,
+                                        border = androidx.compose.foundation.BorderStroke(
+                                            width = 2.dp,
+                                            color = if (MaterialTheme.colorScheme.primary == color) 
+                                                MaterialTheme.colorScheme.onSurface 
+                                            else Color.Transparent
+                                        )
+                                    ) {}
+                                }
+                            }
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -517,7 +466,7 @@ fun ConfigDialog(
                         }
                     } else {
                         TextButton(onClick = onDismiss) {
-                            Text("CLOSE")
+                            Text("")
                         }
                     }
 
@@ -575,3 +524,236 @@ fun ConfigMenuButton(
 }
 
 private fun <T> mutableStateFlow(value: T): MutableState<T> = mutableStateOf(value)
+
+@Composable
+fun LoginFormContent(
+    viewModel: LoginViewModel,
+    username: String,
+    password: String,
+    isLoading: Boolean,
+    loginResult: Result<com.syed.jetpacktwo.data.model.LoginResponse>?,
+    passwordVisible: Boolean,
+    onPasswordVisibleChange: (Boolean) -> Unit,
+    showConfigDialog: () -> Unit,
+    onExit: () -> Unit,
+    logoScale: Float,
+    contentAlpha: Float,
+    cardOffsetY: androidx.compose.ui.unit.Dp,
+    startAnimation: Boolean
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Spacer(modifier = Modifier.height(32.dp))
+        
+        // Animated Logo Section
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .scale(logoScale)
+                .alpha(contentAlpha)
+        ) {
+            Surface(
+                modifier = Modifier.size(80.dp),
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.PrecisionManufacturing,
+                    contentDescription = null,
+                    modifier = Modifier.padding(16.dp).fillMaxSize(),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(horizontalArrangement = Arrangement.Center) {
+                "STOCK EYE".forEachIndexed { index, char ->
+                    val charAlpha by animateFloatAsState(
+                        targetValue = if (startAnimation) 1f else 0f,
+                        animationSpec = tween(
+                            durationMillis = 400,
+                            delayMillis = 400 + (index * 80),
+                            easing = LinearOutSlowInEasing
+                        ),
+                        label = "char_alpha_$index"
+                    )
+                    val charScale by animateFloatAsState(
+                        targetValue = if (startAnimation) 1f else 0.4f,
+                        animationSpec = spring(
+                            dampingRatio = 0.6f,
+                            stiffness = Spring.StiffnessLow
+                        ),
+                        label = "char_scale_$index"
+                    )
+                    Text(
+                        text = char.toString(),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = 34.sp,
+                        fontWeight = FontWeight.Black,
+                        modifier = Modifier
+                            .graphicsLayer(
+                                alpha = charAlpha,
+                                scaleX = charScale,
+                                scaleY = charScale
+                            ),
+                        letterSpacing = 1.sp
+                    )
+                }
+            }
+
+            Row(horizontalArrangement = Arrangement.Center) {
+                "SMART STOCK TAKE SYSTEM".forEachIndexed { index, char ->
+                    val charAlpha by animateFloatAsState(
+                        targetValue = if (startAnimation) 1f else 0f,
+                        animationSpec = tween(
+                            durationMillis = 300,
+                            delayMillis = 1000 + (index * 30),
+                            easing = LinearOutSlowInEasing
+                        ),
+                        label = "sub_alpha_$index"
+                    )
+                    Text(
+                        text = char.toString(),
+                        color = MaterialTheme.colorScheme.primary,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.graphicsLayer(alpha = charAlpha),
+                        letterSpacing = if (char == ' ') 3.sp else 0.5.sp
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(48.dp))
+
+        // Animated Login Card
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .widthIn(max = 480.dp)
+                .offset(y = cardOffsetY)
+                .alpha(contentAlpha),
+            color = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(32.dp),
+            shadowElevation = 4.dp,
+            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                Text(
+                    text = "Sign In",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                
+                OutlinedTextField(
+                    value = username,
+                    onValueChange = { viewModel.onUsernameChange(it) },
+                    label = { Text("Username") },
+                    modifier = Modifier.fillMaxWidth(),
+                    leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
+                        focusedLabelColor = MaterialTheme.colorScheme.primary
+                    ),
+                    shape = RoundedCornerShape(16.dp),
+                    singleLine = true
+                )
+
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { viewModel.onPasswordChange(it) },
+                    label = { Text("Password") },
+                    modifier = Modifier.fillMaxWidth(),
+                    leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        val image = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+                        IconButton(onClick = rememberDebouncedClick { onPasswordVisibleChange(!passwordVisible) }) {
+                            Icon(imageVector = image, contentDescription = null)
+                        }
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
+                        focusedLabelColor = MaterialTheme.colorScheme.primary
+                    ),
+                    shape = RoundedCornerShape(16.dp),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    singleLine = true
+                )
+
+                Button(
+                    onClick = rememberDebouncedClick { viewModel.login() },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ),
+                    enabled = !isLoading
+                ) {
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text("LOGIN", fontWeight = FontWeight.Bold, fontSize = 16.sp, letterSpacing = 1.sp)
+                    }
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextButton(onClick = rememberDebouncedClick { showConfigDialog() }) {
+                        Icon(Icons.Default.Settings, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("CONFIG", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                    }
+
+                    TextButton(onClick = rememberDebouncedClick { onExit() }) {
+                        Icon(Icons.Default.ExitToApp, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("EXIT", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                    }
+                }
+            }
+        }
+
+        // Animated Error Message
+        AnimatedVisibility(
+            visible = loginResult?.isFailure == true,
+            enter = fadeIn() + expandVertically(),
+            exit = fadeOut() + shrinkVertically()
+        ) {
+            loginResult?.exceptionOrNull()?.let {
+                Text(
+                    text = it.message ?: "Login failed",
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = 24.dp),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(32.dp))
+    }
+}

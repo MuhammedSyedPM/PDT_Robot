@@ -28,7 +28,15 @@ fun NavGraph(
                 }
             )
         }
-        composable("login") {
+        composable(
+            route = "login",
+            enterTransition = {
+                androidx.compose.animation.slideInHorizontally(
+                    initialOffsetX = { -it }, // starts from left and slides to 0 (rightward)
+                    animationSpec = androidx.compose.animation.core.tween(700, easing = androidx.compose.animation.core.FastOutSlowInEasing)
+                ) + androidx.compose.animation.fadeIn(animationSpec = androidx.compose.animation.core.tween(700))
+            }
+        ) {
             LoginScreen(
                 onLoginSuccess = {
                     navController.navigate("home") {

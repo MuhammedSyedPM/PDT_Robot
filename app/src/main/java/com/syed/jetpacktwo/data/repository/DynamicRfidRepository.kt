@@ -24,6 +24,7 @@ class DynamicRfidRepository @Inject constructor(
     private val nordicRepo: RfidRepositoryImpl,
     private val chainwayRepo: ChainwayRfidRepositoryImpl,
     private val zebraRepo: ZebraRfidRepositoryImpl,
+    private val zebraFixedRepo: ZebraFixedRfidRepositoryImpl,
     private val impinjRepo: ImpinjRfidRepositoryImpl
 ) : RfidRepository {
 
@@ -68,6 +69,7 @@ class DynamicRfidRepository @Inject constructor(
     private fun getRepoForType(type: String): RfidRepository {
         return when (type.uppercase()) {
             "ZEBRA" -> zebraRepo
+            "ZEBRA FIXED" -> zebraFixedRepo
             "CHAINWAY" -> chainwayRepo
             "NORDIC" -> nordicRepo
             "IMPINJ" -> impinjRepo
@@ -115,6 +117,7 @@ class DynamicRfidRepository @Inject constructor(
         nordicRepo.dispose()
         chainwayRepo.dispose()
         zebraRepo.dispose()
+        zebraFixedRepo.dispose()
         impinjRepo.dispose()
     }
 
@@ -134,6 +137,7 @@ class DynamicRfidRepository @Inject constructor(
         nordicRepo.setEpcFilter(filter)
         chainwayRepo.setEpcFilter(filter)
         zebraRepo.setEpcFilter(filter)
+        zebraFixedRepo.setEpcFilter(filter)
         impinjRepo.setEpcFilter(filter)
     }
 }

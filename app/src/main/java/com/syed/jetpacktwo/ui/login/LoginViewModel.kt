@@ -135,7 +135,9 @@ class LoginViewModel @Inject constructor(
                 locationID = 0,
                 deviceID = _selectedDeviceId.value.ifEmpty { "1" }
             )
+            android.util.Log.d("login_msd", "Login Request: $request")
             val result = repository.login(request)
+            android.util.Log.d("login_msd", "Login Response: $result")
             _loginResult.value = result
             _isLoading.value = false
         }

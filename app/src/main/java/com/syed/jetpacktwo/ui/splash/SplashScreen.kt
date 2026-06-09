@@ -95,7 +95,11 @@ fun SplashScreen(
                         contentScale = ContentScale.Crop, 
                         modifier = Modifier
                             .fillMaxSize()
-                            .alpha(alphaAnim)
+                            .alpha(alphaAnim),
+                        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.35f),
+                            androidx.compose.ui.graphics.BlendMode.SrcAtop
+                        )
                     )
                 }
 
@@ -232,7 +236,11 @@ fun SplashScreen(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxSize()
-                        .alpha(alphaAnim)
+                        .alpha(alphaAnim),
+                    colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.25f),
+                        androidx.compose.ui.graphics.BlendMode.SrcAtop
+                    )
                 )
 
                 Box(

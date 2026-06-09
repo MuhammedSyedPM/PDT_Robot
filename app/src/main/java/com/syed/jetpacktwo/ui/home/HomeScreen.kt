@@ -23,6 +23,11 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.draw.blur
+import com.syed.jetpacktwo.R
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,6 +35,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.text.KeyboardOptions
@@ -65,6 +73,7 @@ fun HomeScreen(
     var showClearDialog by remember { mutableStateOf(false) }
     var showUploadResultDialog by remember { mutableStateOf(false) }
     var showImpinjConfigDialog by remember { mutableStateOf(false) }
+    var showZebraFixedConfigDialog by remember { mutableStateOf(false) }
     var showPowerDialog by remember { mutableStateOf(false) }
     var showColorPickerDialog by remember { mutableStateOf(false) }
 
@@ -102,9 +111,25 @@ fun HomeScreen(
     }
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background // Clean Groww-style background
+        containerColor = Color.Transparent // Clean Groww-style background
     ) { paddingValues ->
         Box(modifier = Modifier.fillMaxSize()) {
+            // Background Image with Blur and Overlay
+            Image(
+                painter = painterResource(id = R.drawable.splsh_image),
+                contentDescription = "Background",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .blur(radius = 32.dp)
+            )
+            // Overlay to ensure text readability
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background.copy(alpha = if (isDarkMode) 0.8f else 0.95f))
+            )
+            
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -191,6 +216,8 @@ fun HomeScreen(
                                 }
                             } else if (hwType == "IMPINJ") {
                                 showImpinjConfigDialog = true
+                            } else if (hwType == "ZEBRA FIXED") {
+                                showZebraFixedConfigDialog = true
                             } else {
                                 showPowerDialog = true
                             }
@@ -288,6 +315,8 @@ fun HomeScreen(
                                 onClick = rememberDebouncedClick { 
                                     if (viewModel.getCurrentHardwareType() == "IMPINJ") {
                                         showImpinjConfigDialog = true
+                                    } else if (viewModel.getCurrentHardwareType() == "ZEBRA FIXED") {
+                                        showZebraFixedConfigDialog = true
                                     } else if (context is android.app.Activity) {
                                         viewModel.launchDeviceList(context)
                                     }
@@ -359,6 +388,27 @@ fun HomeScreen(
                         )
                         ActionCard(
                             modifier = Modifier.weight(1f),
+                            title = "POWER",
+                            subtitle = "Settings",
+                            icon = Icons.Default.Settings,
+                            color = MaterialTheme.colorScheme.primary,
+                            onClick = {
+                                val hwType = viewModel.getCurrentHardwareType()
+                                if (hwType == "NORDIC") {
+                                    if (context is android.app.Activity) {
+                                        viewModel.launchPowerSettings(context)
+                                    }
+                                } else if (hwType == "IMPINJ") {
+                                    showImpinjConfigDialog = true
+                                } else if (hwType == "ZEBRA FIXED") {
+                                    showZebraFixedConfigDialog = true
+                                } else {
+                                    showPowerDialog = true
+                                }
+                            }
+                        )
+                        ActionCard(
+                            modifier = Modifier.weight(1f),
                             title = "EXIT",
                             subtitle = "Close Session",
                             icon = Icons.Default.ExitToApp,
@@ -401,6 +451,32 @@ fun HomeScreen(
                             color = MaterialTheme.colorScheme.error,
                             onClick = { showClearDialog = true }
                         )
+                        ActionCard(
+                            modifier = Modifier.weight(1f),
+                            title = "POWER",
+                            subtitle = "Settings",
+                            icon = Icons.Default.Settings,
+                            color = MaterialTheme.colorScheme.primary,
+                            onClick = {
+                                val hwType = viewModel.getCurrentHardwareType()
+                                if (hwType == "NORDIC") {
+                                    if (context is android.app.Activity) {
+                                        viewModel.launchPowerSettings(context)
+                                    }
+                                } else if (hwType == "IMPINJ") {
+                                    showImpinjConfigDialog = true
+                                } else if (hwType == "ZEBRA FIXED") {
+                                    showZebraFixedConfigDialog = true
+                                } else {
+                                    showPowerDialog = true
+                                }
+                            }
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
                         ActionCard(
                             modifier = Modifier.weight(1f),
                             title = "EXIT",
@@ -630,6 +706,17 @@ if (showUploadResultDialog) {
             }
         )
     }
+
+    if (showZebraFixedConfigDialog) {
+        ZebraFixedConfigDialog(
+            initialIp = viewModel.scannerSpec.collectAsState().value,
+            onDismiss = { showZebraFixedConfigDialog = false },
+            onConnect = { ip -> 
+                showZebraFixedConfigDialog = false
+                viewModel.connect(ip)
+            }
+        )
+    }
 }
 
 @Composable
@@ -643,14 +730,30 @@ fun ActionCard(
     badgeCount: Int = 0
 ) {
     // CRED-inspired sharp, cute, and premium design
+    val interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.94f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        ),
+        label = "button_bounce"
+    )
+
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .debouncedClickable { onClick() },
+            .scale(scale)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = LocalIndication.current,
+                onClick = rememberDebouncedClick { onClick() }
+            ),
         color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(12.dp), // Sharper corners
         border = androidx.compose.foundation.BorderStroke(1.dp, color.copy(alpha = 0.4f)), // Glowing neon-like border
-        shadowElevation = 6.dp
+        shadowElevation = if (isPressed) 2.dp else 6.dp
     ) {
         Box(
             modifier = Modifier
@@ -873,6 +976,41 @@ fun ImpinjConfigDialog(
                 onConnect(ipAddress) 
             }) {
                 Text("SAVE & CONNECT")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("CANCEL")
+            }
+        }
+    )
+}
+
+@Composable
+fun ZebraFixedConfigDialog(
+    initialIp: String,
+    onDismiss: () -> Unit,
+    onConnect: (String) -> Unit
+) {
+    var ipAddress by remember { mutableStateOf(initialIp) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Zebra Fixed Configuration") },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = ipAddress,
+                    onValueChange = { ipAddress = it },
+                    label = { Text("Reader IP Address") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            Button(onClick = { onConnect(ipAddress) }) {
+                Text("CONNECT")
             }
         },
         dismissButton = {

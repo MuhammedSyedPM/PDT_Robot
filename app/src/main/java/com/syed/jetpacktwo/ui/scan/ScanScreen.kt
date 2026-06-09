@@ -18,11 +18,14 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.RadioButtonChecked
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.filled.StopCircle
+import androidx.compose.material.icons.filled.WifiTethering
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -192,41 +195,91 @@ fun ScanScreen(
                     exit = fadeOut() + shrinkVertically()
                 ) {
                     val infiniteTransition = rememberInfiniteTransition()
-                    val pulseAlpha by infiniteTransition.animateFloat(
-                        initialValue = 0.3f,
-                        targetValue = 1f,
+                    
+                    // Radar rotation
+                    val rotation by infiniteTransition.animateFloat(
+                        initialValue = 0f,
+                        targetValue = 360f,
                         animationSpec = infiniteRepeatable(
-                            animation = tween(800, easing = LinearOutSlowInEasing),
+                            animation = tween(1500, easing = LinearEasing),
+                            repeatMode = RepeatMode.Restart
+                        )
+                    )
+
+                    // Gentle pulse for the icon
+                    val iconScale by infiniteTransition.animateFloat(
+                        initialValue = 0.85f,
+                        targetValue = 1.15f,
+                        animationSpec = infiniteRepeatable(
+                            animation = tween(1000, easing = FastOutSlowInEasing),
                             repeatMode = RepeatMode.Reverse
                         )
                     )
 
-                    Row(
-                        modifier = Modifier
-                            .padding(bottom = 16.dp)
-                            .background(
-                                color = com.syed.jetpacktwo.ui.theme.GrowwGreen.copy(alpha = 0.15f),
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                    // Blinking alpha for text
+                    val textAlpha by infiniteTransition.animateFloat(
+                        initialValue = 0.2f,
+                        targetValue = 1f,
+                        animationSpec = infiniteRepeatable(
+                            animation = tween(600, easing = FastOutSlowInEasing),
+                            repeatMode = RepeatMode.Reverse
+                        )
+                    )
+
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(bottom = 16.dp)
                     ) {
-                        // Pulsing Green Dot
-                        Box(
-                            modifier = Modifier
-                                .size(12.dp)
-                                .alpha(pulseAlpha)
-                                .background(com.syed.jetpacktwo.ui.theme.GrowwGreen, CircleShape)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = "SCANNING...",
-                            color = com.syed.jetpacktwo.ui.theme.GrowwGreen,
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 14.sp,
-                            letterSpacing = 2.sp,
-                            modifier = Modifier.alpha(pulseAlpha)
-                        )
+                        // Cute text pill with inline radar animation
+                        Surface(
+                            shape = RoundedCornerShape(16.dp),
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(start = 12.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                            ) {
+                                // Small Radar Scanner infront of text
+                                Box(
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .clip(CircleShape)
+                                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .graphicsLayer { rotationZ = rotation }
+                                            .background(
+                                                Brush.sweepGradient(
+                                                    0f to Color.Transparent,
+                                                    0.8f to MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                                                    1f to MaterialTheme.colorScheme.primary
+                                                )
+                                            )
+                                    )
+                                    Icon(
+                                        imageVector = Icons.Default.WifiTethering, 
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier
+                                            .size(16.dp)
+                                            .align(Alignment.Center)
+                                            .scale(iconScale)
+                                    )
+                                }
+                                
+                                Text(
+                                    text = "SCANNING IN PROGRESS",
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp,
+                                    letterSpacing = 1.sp,
+                                    modifier = Modifier.alpha(textAlpha)
+                                )
+                            }
+                        }
                     }
                 }
 
