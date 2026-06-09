@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PDT STOCKBOT</string>
+    <string name="app_name">STOCK EYE</string>
     <string name="select_hardware">Select Hardware</string>
     <string name="start_scan">Start Scan</string>
     <string name="stop_scan">Stop Scan</string>

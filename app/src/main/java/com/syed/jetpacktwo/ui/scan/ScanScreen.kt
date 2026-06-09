@@ -1,6 +1,8 @@
 package com.syed.jetpacktwo.ui.scan
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.*
+import androidx.compose.ui.draw.alpha
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -61,12 +63,35 @@ fun ScanScreen(
         0
     }
 
+    // Shared logic to safely stop the reader and clear data when leaving the screen
+    val handleBack = {
+        if (localIsScanning && !isStopping) {
+            viewModel.stopReader()
+            viewModel.clearTagReads() // Clears without saving, as requested
+        }
+        onBack()
+    }
+
+    // Intercept system back button swipe/press
+    androidx.activity.compose.BackHandler {
+        handleBack()
+    }
+
+    // Failsafe: if the screen is removed from composition for any reason, stop reading
+    DisposableEffect(Unit) {
+        onDispose {
+            if (localIsScanning && !isStopping) {
+                viewModel.stopReader()
+            }
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Smart scan", color = MaterialTheme.colorScheme.onBackground) },
                 navigationIcon = {
-                    IconButton(onClick = rememberDebouncedClick { onBack() }) {
+                    IconButton(onClick = rememberDebouncedClick { handleBack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onBackground)
                     }
                 },
@@ -158,7 +183,56 @@ fun ScanScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Scanning Indication Animation
+                AnimatedVisibility(
+                    visible = localIsScanning && !isStopping,
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically()
+                ) {
+                    val infiniteTransition = rememberInfiniteTransition()
+                    val pulseAlpha by infiniteTransition.animateFloat(
+                        initialValue = 0.3f,
+                        targetValue = 1f,
+                        animationSpec = infiniteRepeatable(
+                            animation = tween(800, easing = LinearOutSlowInEasing),
+                            repeatMode = RepeatMode.Reverse
+                        )
+                    )
+
+                    Row(
+                        modifier = Modifier
+                            .padding(bottom = 16.dp)
+                            .background(
+                                color = com.syed.jetpacktwo.ui.theme.GrowwGreen.copy(alpha = 0.15f),
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Pulsing Green Dot
+                        Box(
+                            modifier = Modifier
+                                .size(12.dp)
+                                .alpha(pulseAlpha)
+                                .background(com.syed.jetpacktwo.ui.theme.GrowwGreen, CircleShape)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = "SCANNING...",
+                            color = com.syed.jetpacktwo.ui.theme.GrowwGreen,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 14.sp,
+                            letterSpacing = 2.sp,
+                            modifier = Modifier.alpha(pulseAlpha)
+                        )
+                    }
+                }
+
+                if (!localIsScanning || isStopping) {
+                    Spacer(modifier = Modifier.height(52.dp)) // To maintain vertical spacing
+                }
                 
                 // Digital Counter in Center (Groww Style)
                 Text(

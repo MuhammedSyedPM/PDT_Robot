@@ -128,7 +128,7 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Row(horizontalArrangement = Arrangement.Center) {
-                    "STOCKBOT".forEachIndexed { index, char ->
+                    "STOCK EYE".forEachIndexed { index, char ->
                         val charAlpha by animateFloatAsState(
                             targetValue = if (startAnimation) 1f else 0f,
                             animationSpec = tween(
