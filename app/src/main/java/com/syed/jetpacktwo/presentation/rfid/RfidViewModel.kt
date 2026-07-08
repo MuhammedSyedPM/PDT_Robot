@@ -12,6 +12,10 @@ import com.syed.jetpacktwo.domain.repository.RfidRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import com.syed.jetpacktwo.domain.model.DepartmentProgress
+import com.syed.jetpacktwo.domain.model.ExpectedInventory
+import com.syed.jetpacktwo.domain.model.ProductProgress
+import kotlinx.coroutines.flow.combine
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,6 +32,7 @@ import javax.inject.Inject
 import com.syed.jetpacktwo.data.repository.SyncRepository
 import com.syed.jetpacktwo.data.model.StockTakeResponse
 import com.syed.jetpacktwo.data.local.PreferenceManager
+import com.syed.jetpacktwo.util.Beeper
 
 @HiltViewModel
 class RfidViewModel @Inject constructor(
@@ -35,14 +40,18 @@ class RfidViewModel @Inject constructor(
     private val impinjRepo: com.syed.jetpacktwo.data.repository.ImpinjRfidRepositoryImpl,
     private val scannedTagDao: com.syed.jetpacktwo.data.local.db.ScannedTagDao,
     private val syncRepository: SyncRepository,
-    private val preferenceManager: PreferenceManager
+    private val preferenceManager: PreferenceManager,
+    private val beeper: Beeper
 ) : ViewModel() {
 
     private val _isUploading = MutableStateFlow(false)
     val isUploading: StateFlow<Boolean> = _isUploading.asStateFlow()
 
-    private val _uploadResult = MutableStateFlow<Result<StockTakeResponse>?>(null)
-    val uploadResult: StateFlow<Result<StockTakeResponse>?> = _uploadResult.asStateFlow()
+    private val _uploadResult = MutableStateFlow<Result<Pair<StockTakeResponse, List<com.syed.jetpacktwo.data.local.db.ScannedTag>>>?>(null)
+    val uploadResult: StateFlow<Result<Pair<StockTakeResponse, List<com.syed.jetpacktwo.data.local.db.ScannedTag>>>?> = _uploadResult.asStateFlow()
+
+    private val _lastUploadedTags = MutableStateFlow<List<com.syed.jetpacktwo.data.local.db.ScannedTag>>(emptyList())
+    val lastUploadedTags: StateFlow<List<com.syed.jetpacktwo.data.local.db.ScannedTag>> = _lastUploadedTags.asStateFlow()
 
     val readerStatus: StateFlow<ReaderStatus> = rfidRepository.readerStatus
     val scannerSpec: StateFlow<String> = MutableStateFlow(rfidRepository.getSavedScannerSpec()).asStateFlow()
@@ -63,10 +72,38 @@ class RfidViewModel @Inject constructor(
     val configuredDeviceName: StateFlow<String> = preferenceManager.deviceName
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "Select Device")
 
+    val departmentProgress: StateFlow<List<DepartmentProgress>> = combine(
+        existingTagEpcs,
+        tagReads
+    ) { existing, reads ->
+        val scannedEpcs = existing + reads.map { it.epc }.toSet()
+        val allItems = ExpectedInventory.items
+        
+        // Group by department
+        val grouped = allItems.groupBy { it.department }
+        
+        grouped.map { (dept, itemsInDept) ->
+            // Group identical items within the department by their description
+            val products = itemsInDept.groupBy { it.description }.map { (desc, items) ->
+                val expectedCount = items.size
+                val scannedCount = items.count { it.epc in scannedEpcs }
+                ProductProgress(desc, expectedCount, scannedCount)
+            }
+            
+//            val remainingEpcs = itemsInDept.filter { it.epc !in scannedEpcs }.map { it.epc }
+////            if (remainingEpcs.isNotEmpty()) {
+////                Log.d("Department", "Department: $dept, Remaining EPCs: $remainingEpcs")
+////            }
+            
+            DepartmentProgress(dept, products)
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
     init {
         rfidRepository.tagReadEvents
             .onEach { event ->
                 _tagReads.update { list -> list + event }
+                // beeper.playReadSound() // Disabled as per user request
             }
             .catch { }
             .launchIn(viewModelScope)
@@ -83,6 +120,21 @@ class RfidViewModel @Inject constructor(
                 rfidRepository.setEpcFilter(filter)
             }
         }
+        
+        var wasConnected = false
+        rfidRepository.readerStatus
+            .onEach { status ->
+                if (status.isConnected && !wasConnected) {
+                    beeper.playConnectionSound()
+                }
+                wasConnected = status.isConnected
+            }
+            .launchIn(viewModelScope)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        beeper.release()
     }
 
     fun connect(scannerSpec: String) {
@@ -137,6 +189,9 @@ class RfidViewModel @Inject constructor(
             _isUploading.value = true
             _uploadResult.value = null
             val result = syncRepository.uploadInventory()
+            if (result.isSuccess) {
+                _lastUploadedTags.value = result.getOrNull()?.second ?: emptyList()
+            }
             _uploadResult.value = result
             _isUploading.value = false
         }

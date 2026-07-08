@@ -47,8 +47,8 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:configChanges="uiMode|screenSize"
-            android:theme="@style/Theme.JetPackTwo">
+            android:theme="@style/Theme.JetPackTwo.Splash"
+            android:configChanges="uiMode|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

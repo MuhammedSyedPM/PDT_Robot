@@ -121,7 +121,7 @@ class RfidRepositoryImpl @Inject constructor(
 
     init {
         Beeper.init(context)
-        Beeper.setEnabled(true)
+        Beeper.setEnabled(false) // Disabled as per user request to stop scanning sound
         BleScanner.init(context)
         mNurApi = NurApi()
         mAccExt = AccessoryExtension(mNurApi)
@@ -334,7 +334,7 @@ class RfidRepositoryImpl @Inject constructor(
                     if (epcString.length != 24) continue
                     
                     // Apply EPC Prefix Filter if active
-                    if (currentEpcFilter.isNotEmpty() && !epcString.startsWith(currentEpcFilter, ignoreCase = true)) {
+                    if (currentEpcFilter.isNotEmpty() && !epcString.startsWith(currentEpcFilter, ignoreCase = true) && !epcString.startsWith("C", ignoreCase = true)) {
                         continue
                     }
                     

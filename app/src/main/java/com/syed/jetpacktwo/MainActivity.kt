@@ -98,6 +98,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_JetPackTwo)
         super.onCreate(savedInstanceState)
         
         // Manual assignment to ensure Hilt handles it

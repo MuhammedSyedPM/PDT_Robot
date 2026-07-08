@@ -41,12 +41,14 @@ import androidx.compose.foundation.LocalIndication
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.syed.jetpacktwo.presentation.rfid.RfidViewModel
 import com.syed.jetpacktwo.util.debouncedClickable
 import com.syed.jetpacktwo.util.rememberDebouncedClick
 import androidx.compose.ui.platform.LocalConfiguration
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,6 +56,8 @@ fun HomeScreen(
     onScanClick: () -> Unit,
     onUploadClick: () -> Unit,
     onLogout: () -> Unit,
+    onReportClick: (String) -> Unit = {},
+    onDownloadRackClick: () -> Unit = {},
     viewModel: RfidViewModel = hiltViewModel(),
     settingsViewModel: com.syed.jetpacktwo.presentation.settings.SettingsViewModel = hiltViewModel()
 ) {
@@ -76,6 +80,7 @@ fun HomeScreen(
     var showZebraFixedConfigDialog by remember { mutableStateOf(false) }
     var showPowerDialog by remember { mutableStateOf(false) }
     var showColorPickerDialog by remember { mutableStateOf(false) }
+    var showReportDialog by remember { mutableStateOf(false) }
 
     // Handle Upload Result
     LaunchedEffect(uploadResult) {
@@ -106,6 +111,15 @@ fun HomeScreen(
         label = "scale"
     )
 
+    var pendingNavigation by remember { mutableStateOf<(() -> Unit)?>(null) }
+    LaunchedEffect(pendingNavigation) {
+        pendingNavigation?.let { navAction ->
+            delay(300) // Show progress for a short time to improve UX
+            navAction()
+            pendingNavigation = null
+        }
+    }
+
     BackHandler {
         showExitDialog = true
     }
@@ -129,6 +143,14 @@ fun HomeScreen(
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.background.copy(alpha = if (isDarkMode) 0.8f else 0.95f))
             )
+            
+            if (pendingNavigation != null) {
+                LinearProgressIndicator(
+                    modifier = Modifier.fillMaxWidth().align(Alignment.TopCenter),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                )
+            }
             
             Column(
                 modifier = Modifier
@@ -274,7 +296,7 @@ fun HomeScreen(
                         
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = if (isConnected) "Hardware Connected" else "Hardware Disconnected",
+                                text = if (isConnected) "Hardware Connected" else if (readerStatus.isConnecting) "Connecting..." else "Hardware Disconnected",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface,
@@ -282,11 +304,17 @@ fun HomeScreen(
                                 overflow = TextOverflow.Ellipsis
                             )
                             Text(
-                                text = if (isConnected) "Device: ${readerStatus.status.replace("Connected: ", "").replace("Connected to ", "").replace("Chainway Connected ", "")}" else "Scanning for devices...",
+                                text = if (isConnected) {
+                                    "Device: ${readerStatus.status.replace("Connected: ", "").replace("Connected to ", "").replace("Chainway Connected ", "")}"
+                                } else if (readerStatus.status.contains("Disconnected", ignoreCase = true)) {
+                                    "Scanning for devices..."
+                                } else {
+                                    readerStatus.status
+                                },
                                 fontSize = 12.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                                color = if (!isConnected && !readerStatus.isConnecting && !readerStatus.status.contains("Disconnected", ignoreCase = true)) 
+                                    MaterialTheme.colorScheme.error 
+                                else MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
 
@@ -367,7 +395,7 @@ fun HomeScreen(
                             subtitle = "Start Inventory",
                             icon = Icons.Default.Sensors,
                             color = MaterialTheme.colorScheme.primary,
-                            onClick = onScanClick
+                            onClick = { pendingNavigation = onScanClick }
                         )
                         ActionCard(
                             modifier = Modifier.weight(1f),
@@ -375,8 +403,16 @@ fun HomeScreen(
                             subtitle = if (totalScannedCount > 0) "Sync Required" else "Everything Synced",
                             icon = Icons.Default.CloudUpload,
                             color = if (totalScannedCount > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
-                            onClick = { if (totalScannedCount > 0) viewModel.uploadTags() },
+                            onClick = { pendingNavigation = { if (totalScannedCount > 0) viewModel.uploadTags() } },
                             badgeCount = totalScannedCount
+                        )
+                        ActionCard(
+                            modifier = Modifier.weight(1f),
+                            title = "RACKS",
+                            subtitle = "Download Racks",
+                            icon = Icons.Default.CloudDownload,
+                            color = MaterialTheme.colorScheme.primary,
+                            onClick = { pendingNavigation = onDownloadRackClick }
                         )
                         ActionCard(
                             modifier = Modifier.weight(1f),
@@ -384,7 +420,15 @@ fun HomeScreen(
                             subtitle = "Wipe Database",
                             icon = Icons.Default.DeleteForever,
                             color = MaterialTheme.colorScheme.error,
-                            onClick = { showClearDialog = true }
+                            onClick = { pendingNavigation = { showClearDialog = true } }
+                        )
+                        ActionCard(
+                            modifier = Modifier.weight(1f),
+                            title = "REPORT",
+                            subtitle = "Summary",
+                            icon = Icons.Default.Assessment,
+                            color = MaterialTheme.colorScheme.primary,
+                            onClick = { pendingNavigation = { showReportDialog = true } }
                         )
                         ActionCard(
                             modifier = Modifier.weight(1f),
@@ -393,17 +437,19 @@ fun HomeScreen(
                             icon = Icons.Default.Settings,
                             color = MaterialTheme.colorScheme.primary,
                             onClick = {
-                                val hwType = viewModel.getCurrentHardwareType()
-                                if (hwType == "NORDIC") {
-                                    if (context is android.app.Activity) {
-                                        viewModel.launchPowerSettings(context)
+                                pendingNavigation = {
+                                    val hwType = viewModel.getCurrentHardwareType()
+                                    if (hwType == "NORDIC") {
+                                        if (context is android.app.Activity) {
+                                            viewModel.launchPowerSettings(context)
+                                        }
+                                    } else if (hwType == "IMPINJ") {
+                                        showImpinjConfigDialog = true
+                                    } else if (hwType == "ZEBRA FIXED") {
+                                        showZebraFixedConfigDialog = true
+                                    } else {
+                                        showPowerDialog = true
                                     }
-                                } else if (hwType == "IMPINJ") {
-                                    showImpinjConfigDialog = true
-                                } else if (hwType == "ZEBRA FIXED") {
-                                    showZebraFixedConfigDialog = true
-                                } else {
-                                    showPowerDialog = true
                                 }
                             }
                         )
@@ -413,7 +459,7 @@ fun HomeScreen(
                             subtitle = "Close Session",
                             icon = Icons.Default.ExitToApp,
                             color = MaterialTheme.colorScheme.primary,
-                            onClick = { showExitDialog = true }
+                            onClick = { pendingNavigation = { showExitDialog = true } }
                         )
                     }
                 } else {
@@ -427,7 +473,7 @@ fun HomeScreen(
                             subtitle = "Start Inventory",
                             icon = Icons.Default.Sensors,
                             color = MaterialTheme.colorScheme.primary,
-                            onClick = onScanClick
+                            onClick = { pendingNavigation = onScanClick }
                         )
                         ActionCard(
                             modifier = Modifier.weight(1f),
@@ -435,7 +481,7 @@ fun HomeScreen(
                             subtitle = if (totalScannedCount > 0) "Sync Required" else "Everything Synced",
                             icon = Icons.Default.CloudUpload,
                             color = if (totalScannedCount > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
-                            onClick = { if (totalScannedCount > 0) viewModel.uploadTags() },
+                            onClick = { pendingNavigation = { if (totalScannedCount > 0) viewModel.uploadTags() } },
                             badgeCount = totalScannedCount
                         )
                     }
@@ -445,11 +491,32 @@ fun HomeScreen(
                     ) {
                         ActionCard(
                             modifier = Modifier.weight(1f),
+                            title = "RACKS",
+                            subtitle = "Download Racks",
+                            icon = Icons.Default.CloudDownload,
+                            color = MaterialTheme.colorScheme.primary,
+                            onClick = { pendingNavigation = onDownloadRackClick }
+                        )
+                        ActionCard(
+                            modifier = Modifier.weight(1f),
                             title = "CLEAR",
                             subtitle = "Wipe Database",
                             icon = Icons.Default.DeleteForever,
                             color = MaterialTheme.colorScheme.error,
-                            onClick = { showClearDialog = true }
+                            onClick = { pendingNavigation = { showClearDialog = true } }
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        ActionCard(
+                            modifier = Modifier.weight(1f),
+                            title = "REPORT",
+                            subtitle = "Summary",
+                            icon = Icons.Default.Assessment,
+                            color = MaterialTheme.colorScheme.primary,
+                            onClick = { pendingNavigation = { showReportDialog = true } }
                         )
                         ActionCard(
                             modifier = Modifier.weight(1f),
@@ -458,17 +525,19 @@ fun HomeScreen(
                             icon = Icons.Default.Settings,
                             color = MaterialTheme.colorScheme.primary,
                             onClick = {
-                                val hwType = viewModel.getCurrentHardwareType()
-                                if (hwType == "NORDIC") {
-                                    if (context is android.app.Activity) {
-                                        viewModel.launchPowerSettings(context)
+                                pendingNavigation = {
+                                    val hwType = viewModel.getCurrentHardwareType()
+                                    if (hwType == "NORDIC") {
+                                        if (context is android.app.Activity) {
+                                            viewModel.launchPowerSettings(context)
+                                        }
+                                    } else if (hwType == "IMPINJ") {
+                                        showImpinjConfigDialog = true
+                                    } else if (hwType == "ZEBRA FIXED") {
+                                        showZebraFixedConfigDialog = true
+                                    } else {
+                                        showPowerDialog = true
                                     }
-                                } else if (hwType == "IMPINJ") {
-                                    showImpinjConfigDialog = true
-                                } else if (hwType == "ZEBRA FIXED") {
-                                    showZebraFixedConfigDialog = true
-                                } else {
-                                    showPowerDialog = true
                                 }
                             }
                         )
@@ -483,8 +552,9 @@ fun HomeScreen(
                             subtitle = "Close Session",
                             icon = Icons.Default.ExitToApp,
                             color = MaterialTheme.colorScheme.primary,
-                            onClick = { showExitDialog = true }
+                            onClick = { pendingNavigation = { showExitDialog = true } }
                         )
+                        Spacer(modifier = Modifier.weight(1f))
                     }
                 }
             }
@@ -503,7 +573,7 @@ fun HomeScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                    AnimatedUploadingIcon()
                     Spacer(modifier = Modifier.height(16.dp))
                     Text("Uploading Inventory...", color = Color.White, fontWeight = FontWeight.Bold)
                 }
@@ -515,16 +585,24 @@ fun HomeScreen(
 // Upload Result Dialog
 if (showUploadResultDialog) {
     val result = uploadResult
+    val isSuccess = result?.isSuccess == true
     AlertDialog(
         onDismissRequest = { 
             showUploadResultDialog = false
             viewModel.resetUploadResult()
         },
         title = { 
-            Text(if (result?.isSuccess == true) "Sync Successful" else "Sync Failed")
+            Text(if (isSuccess) "Sync Successful" else "Sync Failed")
         },
         text = {
-            Text(if (result?.isSuccess == true) "Inventory data has been successfully uploaded to the server." else result?.exceptionOrNull()?.message ?: "Unknown error occurred")
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                AnimatedSyncResultIcon(isSuccess = isSuccess)
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = if (isSuccess) "Inventory data has been uploaded successfully!" else (result?.exceptionOrNull()?.message ?: "Unknown error occurred"),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+            }
         },
         confirmButton = {
             Button(onClick = { 
@@ -716,6 +794,108 @@ if (showUploadResultDialog) {
                 viewModel.connect(ip)
             }
         )
+    }
+
+    if (showReportDialog) {
+        androidx.compose.ui.window.Dialog(
+            onDismissRequest = { showReportDialog = false },
+            properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            val dialogWidth = if (isTablet) 600.dp else (configuration.screenWidthDp * 0.9).dp
+            Surface(
+                modifier = Modifier
+                    .width(dialogWidth)
+                    .wrapContentHeight(),
+                shape = RoundedCornerShape(28.dp),
+                color = MaterialTheme.colorScheme.surface,
+                tonalElevation = 6.dp,
+                shadowElevation = 12.dp
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    // Header
+                    Icon(
+                        imageVector = Icons.Default.Assessment,
+                        contentDescription = null,
+                        modifier = Modifier.size(56.dp).padding(bottom = 12.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        text = "Report Options",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = "Select a report type to view analytics",
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 8.dp, bottom = 24.dp)
+                    )
+                    
+                    // Options in Row for Tablet, Column for Mobile
+                    if (isTablet) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            ReportOptionCard(
+                                title = "Rack Status",
+                                icon = Icons.Default.ViewList,
+                                modifier = Modifier.weight(1f),
+                                onClick = { 
+                                    showReportDialog = false 
+                                    onReportClick("rack_status")
+                                }
+                            )
+                            ReportOptionCard(
+                                title = "Stock Status",
+                                icon = Icons.Default.Inventory,
+                                modifier = Modifier.weight(1f),
+                                onClick = { 
+                                    showReportDialog = false
+                                    onReportClick("stock_status")
+                                }
+                            )
+                        }
+                    } else {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            ReportOptionCard(
+                                title = "Rack Status",
+                                icon = Icons.Default.ViewList,
+                                modifier = Modifier.fillMaxWidth(),
+                                onClick = { 
+                                    showReportDialog = false
+                                    onReportClick("rack_status")
+                                }
+                            )
+                            ReportOptionCard(
+                                title = "Stock Status",
+                                icon = Icons.Default.Inventory,
+                                modifier = Modifier.fillMaxWidth(),
+                                onClick = { 
+                                    showReportDialog = false
+                                    onReportClick("stock_status")
+                                }
+                            )
+                        }
+                    }
+                    
+                    Spacer(modifier = Modifier.height(32.dp))
+                    TextButton(
+                        onClick = { showReportDialog = false },
+                        modifier = Modifier.align(Alignment.End)
+                    ) {
+                        Text("CLOSE", fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -1019,4 +1199,159 @@ fun ZebraFixedConfigDialog(
             }
         }
     )
+}
+
+@Composable
+fun AnimatedSyncResultIcon(isSuccess: Boolean) {
+    var animationPlayed by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        animationPlayed = true
+    }
+    
+    Box(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        AnimatedVisibility(
+            visible = animationPlayed,
+            enter = scaleIn(animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)) + fadeIn(animationSpec = tween(500))
+        ) {
+            Icon(
+                imageVector = if (isSuccess) Icons.Default.CheckCircle else Icons.Default.Error,
+                contentDescription = if (isSuccess) "Success" else "Error",
+                tint = if (isSuccess) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                modifier = Modifier.size(80.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun AnimatedUploadingIcon() {
+    val infiniteTransition = rememberInfiniteTransition()
+
+    // Gentle pulsating cloud
+    val cloudScale by infiniteTransition.animateFloat(
+        initialValue = 0.9f,
+        targetValue = 1.05f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1200, easing = LinearOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "cloudScale"
+    )
+
+    Box(
+        modifier = Modifier.size(120.dp),
+        contentAlignment = Alignment.TopCenter
+    ) {
+        // Data packets flowing up
+        Row(
+            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            for (i in 0..2) {
+                // Staggered delays for a continuous flow
+                val delay = i * 400
+                val offsetY by infiniteTransition.animateFloat(
+                    initialValue = 50f,
+                    targetValue = -30f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(1200, delayMillis = delay, easing = LinearEasing),
+                        repeatMode = RepeatMode.Restart
+                    ),
+                    label = "dotOffsetY_$i"
+                )
+                
+                val alpha by infiniteTransition.animateFloat(
+                    initialValue = 0f,
+                    targetValue = 1f,
+                    animationSpec = infiniteRepeatable(
+                        animation = keyframes {
+                            durationMillis = 1200
+                            delayMillis = delay
+                            0f at 0
+                            1f at 200 // Fade in quickly at bottom
+                            1f at 700 // Stay visible
+                            0f at 1200 // Fade out near cloud center
+                        },
+                        repeatMode = RepeatMode.Restart
+                    ),
+                    label = "dotAlpha_$i"
+                )
+                
+                Box(
+                    modifier = Modifier
+                        .offset(y = offsetY.dp)
+                        .size(10.dp)
+                        .alpha(alpha)
+                        .background(Color(0xFF00E5FF), CircleShape) // Vibrant Cyan data packets
+                )
+            }
+        }
+
+        // The Cloud
+        Icon(
+            imageVector = Icons.Default.Cloud,
+            contentDescription = "Server",
+            tint = Color.White,
+            modifier = Modifier
+                .padding(top = 10.dp)
+                .size(80.dp)
+                .scale(cloudScale)
+        )
+    }
+}
+
+@Composable
+fun ReportOptionCard(
+    title: String,
+    icon: ImageVector,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    val interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(targetValue = if (isPressed) 0.96f else 1f, label = "scale")
+
+    Surface(
+        modifier = modifier
+            .scale(scale)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = LocalIndication.current,
+                onClick = onClick
+            ),
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Surface(
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                modifier = Modifier.size(56.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = title,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = title,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+    }
 }

@@ -18,7 +18,7 @@ class SyncRepository @Inject constructor(
     private val scannedTagDao: ScannedTagDao,
     private val preferenceManager: PreferenceManager
 ) {
-    suspend fun uploadInventory(): Result<StockTakeResponse> {
+    suspend fun uploadInventory(): Result<Pair<StockTakeResponse, List<com.syed.jetpacktwo.data.local.db.ScannedTag>>> {
         return try {
             val tags = scannedTagDao.getAllTags().first()
             if (tags.isEmpty()) {
@@ -40,6 +40,7 @@ class SyncRepository @Inject constructor(
             val groupedTags = tags.groupBy { it.schedulerId }
             var overallSuccess = true
             var errorDescription = ""
+            val successfullyUploaded = mutableListOf<com.syed.jetpacktwo.data.local.db.ScannedTag>()
 
             groupedTags.forEach { (sId, tagList) ->
                 val stockTakeInfoList = tagList.map { tag ->
@@ -61,6 +62,7 @@ class SyncRepository @Inject constructor(
                 if (response.isSuccessful && response.body()?.status == true) {
                     // Clear only the uploaded tags for this scheduler
                     scannedTagDao.deleteTags(tagList)
+                    successfullyUploaded.addAll(tagList)
                 } else {
                     overallSuccess = false
                     errorDescription = response.body()?.errorDescription ?: response.errorBody()?.string() ?: "Upload failed for scheduler $sId"
@@ -68,7 +70,7 @@ class SyncRepository @Inject constructor(
             }
 
             if (overallSuccess) {
-                Result.success(StockTakeResponse(0, true, "Success"))
+                Result.success(Pair(StockTakeResponse(0, true, "Success"), successfullyUploaded))
             } else {
                 Result.failure(Exception(errorDescription))
             }

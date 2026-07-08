@@ -119,7 +119,7 @@ class ChainwayRfidRepositoryImpl @Inject constructor(
                         val epc = tag.getEPC() ?: ""
                         Log.d("ChainwayRepo", "Tag EPC: $epc, RSSI: ${tag.getRssi()}")
                         if (epc.isNotEmpty() && epc.length == 24 && !rfidDataCaptured.contains(epc)) {
-                            if (currentEpcFilter.isEmpty() || epc.startsWith(currentEpcFilter, ignoreCase = true)) {
+                            if (currentEpcFilter.isEmpty() || epc.startsWith(currentEpcFilter, ignoreCase = true) || epc.startsWith("C", ignoreCase = true)) {
                                 rfidDataCaptured.add(epc)
                                 tagsCount++
                                 Log.d("ChainwayRepo", "Emitting tag: $epc (Total: $tagsCount)")

@@ -57,7 +57,7 @@ class ZebraRfidRepositoryImpl @Inject constructor(
 
     init {
         Beeper.init(context)
-        Beeper.setEnabled(true)
+        Beeper.setEnabled(false) // Disabled as per user request
         // We will not auto-connect in init anymore to avoid conflicts with MainActivity's connectLastSaved
         // But we can pre-initialize the readers object
         scope.launch {
@@ -517,7 +517,7 @@ class ZebraRfidRepositoryImpl @Inject constructor(
                 Log.d("ZebraRepo", "Tag Read: $epc (Antenna: ${tag.antennaID}, RSSI: ${tag.peakRSSI})")
                 // Only process 24-digit RFID tags that match the filter (if any)
                 if (epc.length == 24) {
-                    if (currentEpcFilter.isEmpty() || epc.startsWith(currentEpcFilter, ignoreCase = true)) {
+                    if (currentEpcFilter.isEmpty() || epc.startsWith(currentEpcFilter, ignoreCase = true) || epc.startsWith("C", ignoreCase = true)) {
                         tagsCount++
                         _tagReadEvents.tryEmit(TagReadEvent(epc, tagsCount))
                     }

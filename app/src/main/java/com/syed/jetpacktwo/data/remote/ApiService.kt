@@ -30,4 +30,10 @@ interface ApiService {
         @Header("accept") accept: String = "text/plain",
         @Header("Content-Type") contentType: String = "application/json-patch+json"
     ): Response<StockTakeResponse>
+
+    @GET("api/reports/rack-status")
+    suspend fun getRackStatus(): Response<List<com.syed.jetpacktwo.data.remote.model.RackStatusDto>>
+
+    @GET("api/reports/stock-status")
+    suspend fun getStockStatus(): Response<List<com.syed.jetpacktwo.data.remote.model.StockStatusDto>>
 }

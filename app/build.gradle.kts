@@ -75,6 +75,9 @@ dependencies {
     // DataStore
     implementation(libs.androidx.datastore.preferences)
     
+    // Lifecycle Process
+    implementation("androidx.lifecycle:lifecycle-process:2.8.3")
+    
     // Navigation
     implementation(libs.androidx.navigation.compose)
     

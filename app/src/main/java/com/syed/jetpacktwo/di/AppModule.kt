@@ -18,4 +18,9 @@ object AppModule {
     ): RfidRepository {
         return dynamicRepo
     }
+
+    @Provides
+    fun provideBeeper(): com.syed.jetpacktwo.util.Beeper {
+        return com.syed.jetpacktwo.util.Beeper()
+    }
 }
