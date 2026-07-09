@@ -1,0 +1,14 @@
+// 
+// Decompiled by Procyon v0.5.36
+// 
+
+package com.technowave.techno_rfid.NordicId;
+
+public class NurCmdCarrier extends NurCmd
+{
+    public static final int CMD = 98;
+    
+    public NurCmdCarrier() {
+        super(98);
+    }
+}
