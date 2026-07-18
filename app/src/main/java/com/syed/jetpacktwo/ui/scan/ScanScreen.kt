@@ -9,6 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChevronLeft
@@ -18,6 +19,7 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.RadioButtonChecked
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.filled.StopCircle
+import androidx.compose.material.icons.filled.SensorsOff
 import androidx.compose.material.icons.filled.WifiTethering
 import androidx.compose.material.icons.filled.ListAlt
 import androidx.compose.material3.*
@@ -44,6 +46,7 @@ import com.syed.jetpacktwo.data.remote.model.StockStatusDto
 @Composable
 fun ScanScreen(
     onBack: () -> Unit,
+    onRackStatusClick: () -> Unit = {},
     viewModel: RfidViewModel = hiltViewModel(),
     settingsViewModel: com.syed.jetpacktwo.presentation.settings.SettingsViewModel = hiltViewModel()
 ) {
@@ -54,6 +57,7 @@ fun ScanScreen(
     val isDarkMode by settingsViewModel.isDarkMode.collectAsState()
     
     val configuration = androidx.compose.ui.platform.LocalConfiguration.current
+    val context = androidx.compose.ui.platform.LocalContext.current
     val isTablet = configuration.screenWidthDp > 600
     
     // For this implementation, I'll use a local state to manage the button toggle and count persistence
@@ -72,6 +76,7 @@ fun ScanScreen(
 
     var pendingNavigation by remember { mutableStateOf<(() -> Unit)?>(null) }
     var showDepartmentBottomSheet by remember { mutableStateOf(false) }
+    var showConnectReaderDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(pendingNavigation) {
         pendingNavigation?.let { navAction ->
@@ -119,9 +124,13 @@ fun ScanScreen(
                                     isStopping = false
                                 }
                             } else {
-                                viewModel.clearTagReads()
-                                viewModel.startReader()
-                                localIsScanning = true
+                                if (!readerStatus.isConnected) {
+                                    showConnectReaderDialog = true
+                                } else {
+                                    viewModel.clearTagReads()
+                                    viewModel.startReader()
+                                    localIsScanning = true
+                                }
                             }
                         }
                     },
@@ -213,7 +222,8 @@ fun ScanScreen(
                         pendingNavigation = pendingNavigation,
                         newTagsCount = newTagsCount,
                         readerStatus = readerStatus,
-                        StartStopButton = StartStopButton
+                        StartStopButton = StartStopButton,
+                        onShowDepartmentBottomSheet = {}
                     )
                 }
                 
@@ -225,7 +235,14 @@ fun ScanScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 16.dp)
                 ) {
-                    DepartmentProgressContent(departmentProgress = departmentProgress)
+                    DepartmentProgressContent(
+                        departmentProgress = departmentProgress,
+                        onRackStatusClick = {
+                            if (pendingNavigation == null) {
+                                pendingNavigation = onRackStatusClick
+                            }
+                        }
+                    )
                 }
             }
         } else {
@@ -242,7 +259,8 @@ fun ScanScreen(
                     pendingNavigation = pendingNavigation,
                     newTagsCount = newTagsCount,
                     readerStatus = readerStatus,
-                    StartStopButton = StartStopButton
+                    StartStopButton = StartStopButton,
+                    onShowDepartmentBottomSheet = { showDepartmentBottomSheet = true }
                 )
             }
         }
@@ -254,9 +272,21 @@ fun ScanScreen(
                 containerColor = MaterialTheme.colorScheme.surface
             ) {
                 Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp).fillMaxHeight(0.85f)) {
-                    DepartmentProgressContent(departmentProgress = departmentProgress)
+                    DepartmentProgressContent(
+                        departmentProgress = departmentProgress,
+                        onRackStatusClick = {
+                            showDepartmentBottomSheet = false
+                            if (pendingNavigation == null) {
+                                pendingNavigation = onRackStatusClick
+                            }
+                        }
+                    )
                 }
             }
+        }
+        
+        if (showConnectReaderDialog) {
+            ReaderNotConnectedDialog(onDismiss = { showConnectReaderDialog = false })
         }
     }
 }
@@ -268,7 +298,8 @@ fun ScanAreaContent(
     pendingNavigation: (() -> Unit)?,
     newTagsCount: Int,
     readerStatus: com.syed.jetpacktwo.domain.model.ReaderStatus,
-    StartStopButton: @Composable () -> Unit
+    StartStopButton: @Composable () -> Unit,
+    onShowDepartmentBottomSheet: () -> Unit
 ) {
     if (pendingNavigation != null) {
         LinearProgressIndicator(
@@ -373,11 +404,29 @@ fun ScanAreaContent(
         
         Spacer(modifier = Modifier.height(48.dp))
         StartStopButton()
+        
+        if (!isTablet) {
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                text = "click here to Live Department Progress",
+                color = MaterialTheme.colorScheme.secondary,
+                textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline,
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(4.dp))
+                    .clickable { onShowDepartmentBottomSheet() }
+                    .padding(8.dp)
+            )
+        }
     }
 }
 
 @Composable
-fun DepartmentProgressContent(departmentProgress: List<com.syed.jetpacktwo.domain.model.DepartmentProgress>) {
+fun DepartmentProgressContent(
+    departmentProgress: List<com.syed.jetpacktwo.domain.model.DepartmentProgress>,
+    onRackStatusClick: () -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -397,13 +446,15 @@ fun DepartmentProgressContent(departmentProgress: List<com.syed.jetpacktwo.domai
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "DEPARTMENT PROGRESS",
-                fontSize = 13.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.primary,
-                letterSpacing = 1.sp
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "DEPARTMENT PROGRESS",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary,
+                    letterSpacing = 1.sp
+                )
+            }
             
             Row(verticalAlignment = Alignment.Bottom) {
                 AnimatedContent(
@@ -661,4 +712,57 @@ fun SensorArcAnimation() {
             }
         }
     }
+}
+
+@Composable
+fun ReaderNotConnectedDialog(onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            Button(
+                onClick = onDismiss,
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+            ) {
+                Text("Got it", fontWeight = FontWeight.Bold)
+            }
+        },
+        icon = {
+            val infiniteTransition = rememberInfiniteTransition()
+            val scale by infiniteTransition.animateFloat(
+                initialValue = 0.8f,
+                targetValue = 1.2f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(600, easing = FastOutSlowInEasing),
+                    repeatMode = RepeatMode.Reverse
+                ),
+                label = "icon_scale"
+            )
+            
+            Box(contentAlignment = Alignment.Center, modifier = Modifier.size(72.dp)) {
+                Box(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .scale(scale)
+                        .background(Color.Red.copy(alpha = 0.15f), CircleShape)
+                )
+                Icon(
+                    imageVector = Icons.Default.SensorsOff,
+                    contentDescription = null,
+                    modifier = Modifier.size(40.dp),
+                    tint = Color.Red
+                )
+            }
+        },
+        title = {
+            Text("Reader Disconnected", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+        },
+        text = {
+            Text(
+                "Please connect your RFID reader before starting the scan.",
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        },
+        shape = RoundedCornerShape(24.dp)
+    )
 }

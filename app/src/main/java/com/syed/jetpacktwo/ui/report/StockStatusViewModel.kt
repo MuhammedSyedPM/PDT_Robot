@@ -32,18 +32,17 @@ class StockStatusViewModel @Inject constructor(
     fun fetchStockStatus() {
         viewModelScope.launch {
             _uiState.value = StockStatusUiState.Loading
-            kotlinx.coroutines.delay(300)
             
-            // Unique departments and their expected counts based on the image
-            val staticData = listOf(
-                StockStatusDto(2, "Womens", 63, 57),
-                StockStatusDto(3, "Mens", 375, 396),
-                StockStatusDto(4, "Kids", 211, 125),
-                StockStatusDto(5, "Boys", 9, 9),
-                StockStatusDto(6, "Common", 23, 15),
-                StockStatusDto(7, "Bedding", 13, 7)
-            )
-            _uiState.value = StockStatusUiState.Success(staticData)
+            val result = repository.getStockStatus("00")
+            if (result.isSuccess) {
+                _uiState.value = StockStatusUiState.Success(result.getOrDefault(emptyList()))
+            } else {
+                _uiState.value = StockStatusUiState.Error(result.exceptionOrNull()?.message ?: "Unknown error")
+            }
         }
+    }
+
+    fun clearError() {
+        _uiState.value = StockStatusUiState.Success(emptyList())
     }
 }

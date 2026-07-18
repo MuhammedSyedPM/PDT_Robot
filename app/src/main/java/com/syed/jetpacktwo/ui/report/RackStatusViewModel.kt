@@ -32,36 +32,17 @@ class RackStatusViewModel @Inject constructor(
     fun fetchRackStatus() {
         viewModelScope.launch {
             _uiState.value = RackStatusUiState.Loading
-            kotlinx.coroutines.delay(300) // slight delay for loading effect
             
-            val staticData = listOf(
-
-                RackStatusDto(2, "Womens", "Glass Top Stand (L)", true),
-                RackStatusDto(3, "Womens", "Standalone Stand (Steel)", true),
-                RackStatusDto(4, "Womens", "Glass Top Stand (R)", true),
-                RackStatusDto(5, "Mens", "Wall Rack Left Top (Corner)", true),
-                RackStatusDto(6, "Mens", "Wall Rack Left Bottom (Corner)", false), // 2 = red cross
-                RackStatusDto(7, "Mens", "Wall Rack Right Top (Corner)", false), // 2 = red cross
-                RackStatusDto(8, "Mens", "Wall Rack Right Bottom (Corner)", true),
-                RackStatusDto(9, "Mens", "Tie Rack Top", true),
-                RackStatusDto(10, "Mens", "Tie Rack Bottom", true),
-                RackStatusDto(11, "Womens", "White wall rack left top", true),
-                RackStatusDto(12, "Womens", "White wall rack right top", true),
-                RackStatusDto(13, "Womens", "White wall rack Middle", true),
-                RackStatusDto(14, "Womens", "White wall rack Bottom", true),
-                RackStatusDto(15, "Kids", "A", true),
-                RackStatusDto(16, "Kids", "C", true),
-                RackStatusDto(17, "Kids", "L", true),
-                RackStatusDto(18, "Kids", "P", true),
-                RackStatusDto(19, "Boys", "X", true),
-                RackStatusDto(20, "Boys", "S", true),
-                RackStatusDto(21, "Boys", "V", true),
-                RackStatusDto(22, "Boys", "W", true),
-                RackStatusDto(1, "Common", "Shoes Rack", true),
-                RackStatusDto(23, "Common", "Reception Table", true),
-                RackStatusDto(24, "Bedding", "Coffee Table", true)
-            )
-            _uiState.value = RackStatusUiState.Success(staticData)
+            val result = repository.getRackStatus("00")
+            if (result.isSuccess) {
+                _uiState.value = RackStatusUiState.Success(result.getOrDefault(emptyList()))
+            } else {
+                _uiState.value = RackStatusUiState.Error(result.exceptionOrNull()?.message ?: "Unknown error")
+            }
         }
+    }
+
+    fun clearError() {
+        _uiState.value = RackStatusUiState.Success(emptyList())
     }
 }

@@ -586,33 +586,43 @@ fun HomeScreen(
 if (showUploadResultDialog) {
     val result = uploadResult
     val isSuccess = result?.isSuccess == true
-    AlertDialog(
-        onDismissRequest = { 
-            showUploadResultDialog = false
-            viewModel.resetUploadResult()
-        },
-        title = { 
-            Text(if (isSuccess) "Sync Successful" else "Sync Failed")
-        },
-        text = {
-            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-                AnimatedSyncResultIcon(isSuccess = isSuccess)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = if (isSuccess) "Inventory data has been uploaded successfully!" else (result?.exceptionOrNull()?.message ?: "Unknown error occurred"),
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                )
-            }
-        },
-        confirmButton = {
-            Button(onClick = { 
+    if (isSuccess) {
+        AlertDialog(
+            onDismissRequest = { 
                 showUploadResultDialog = false
                 viewModel.resetUploadResult()
-            }) {
-                Text("OK")
+            },
+            title = { 
+                Text("Sync Successful")
+            },
+            text = {
+                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                    AnimatedSyncResultIcon(isSuccess = true)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Inventory data has been uploaded successfully!",
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
+                }
+            },
+            confirmButton = {
+                Button(onClick = { 
+                    showUploadResultDialog = false
+                    viewModel.resetUploadResult()
+                }) {
+                    Text("OK")
+                }
             }
-        }
-    )
+        )
+    } else {
+        com.syed.jetpacktwo.ui.components.ApiErrorDialog(
+            errorMessage = result?.exceptionOrNull()?.message ?: "Unknown error occurred",
+            onDismiss = {
+                showUploadResultDialog = false
+                viewModel.resetUploadResult()
+            }
+        )
+    }
 }
 
     if (showClearDialog) {

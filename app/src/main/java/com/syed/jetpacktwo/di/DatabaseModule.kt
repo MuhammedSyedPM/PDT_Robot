@@ -29,4 +29,9 @@ object DatabaseModule {
     fun provideScannedTagDao(database: AppDatabase): ScannedTagDao {
         return database.scannedTagDao()
     }
+
+    @Provides
+    fun provideExpectedItemDao(database: AppDatabase): com.syed.jetpacktwo.data.local.db.ExpectedItemDao {
+        return database.expectedItemDao()
+    }
 }

@@ -544,9 +544,9 @@ class ZebraRfidRepositoryImpl @Inject constructor(
         if (statusEvent.statusEventType == STATUS_EVENT_TYPE.HANDHELD_TRIGGER_EVENT) {
             val triggerEvent = statusEvent.HandheldTriggerEventData
             if (triggerEvent.handheldEvent == HANDHELD_TRIGGER_EVENT_TYPE.HANDHELD_TRIGGER_PRESSED) {
-                startReader()
+                // startReader()
             } else if (triggerEvent.handheldEvent == HANDHELD_TRIGGER_EVENT_TYPE.HANDHELD_TRIGGER_RELEASED) {
-                stopReader()
+                // stopReader()
             }
         } else if (statusEvent.statusEventType == STATUS_EVENT_TYPE.DISCONNECTION_EVENT) {
             isInventoryRunning = false

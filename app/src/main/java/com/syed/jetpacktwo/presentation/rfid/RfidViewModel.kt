@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import com.syed.jetpacktwo.domain.model.DepartmentProgress
-import com.syed.jetpacktwo.domain.model.ExpectedInventory
 import com.syed.jetpacktwo.domain.model.ProductProgress
 import kotlinx.coroutines.flow.combine
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,6 +38,7 @@ class RfidViewModel @Inject constructor(
     private val rfidRepository: RfidRepository,
     private val impinjRepo: com.syed.jetpacktwo.data.repository.ImpinjRfidRepositoryImpl,
     private val scannedTagDao: com.syed.jetpacktwo.data.local.db.ScannedTagDao,
+    private val expectedItemDao: com.syed.jetpacktwo.data.local.db.ExpectedItemDao,
     private val syncRepository: SyncRepository,
     private val preferenceManager: PreferenceManager,
     private val beeper: Beeper
@@ -74,10 +74,10 @@ class RfidViewModel @Inject constructor(
 
     val departmentProgress: StateFlow<List<DepartmentProgress>> = combine(
         existingTagEpcs,
-        tagReads
-    ) { existing, reads ->
+        tagReads,
+        expectedItemDao.getAllExpectedItems()
+    ) { existing, reads, allItems ->
         val scannedEpcs = existing + reads.map { it.epc }.toSet()
-        val allItems = ExpectedInventory.items
         
         // Group by department
         val grouped = allItems.groupBy { it.department }
@@ -89,11 +89,6 @@ class RfidViewModel @Inject constructor(
                 val scannedCount = items.count { it.epc in scannedEpcs }
                 ProductProgress(desc, expectedCount, scannedCount)
             }
-            
-//            val remainingEpcs = itemsInDept.filter { it.epc !in scannedEpcs }.map { it.epc }
-////            if (remainingEpcs.isNotEmpty()) {
-////                Log.d("Department", "Department: $dept, Remaining EPCs: $remainingEpcs")
-////            }
             
             DepartmentProgress(dept, products)
         }

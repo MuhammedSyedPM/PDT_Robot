@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.syed.jetpacktwo.util.getErrorMessage
 
 @Singleton
 class SyncRepository @Inject constructor(
@@ -65,7 +66,7 @@ class SyncRepository @Inject constructor(
                     successfullyUploaded.addAll(tagList)
                 } else {
                     overallSuccess = false
-                    errorDescription = response.body()?.errorDescription ?: response.errorBody()?.string() ?: "Upload failed for scheduler $sId"
+                    errorDescription = response.body()?.errorDescription ?: response.getErrorMessage()
                 }
             }
 

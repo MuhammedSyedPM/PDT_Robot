@@ -80,7 +80,7 @@ fun NavGraph(
                 onScanClick = { navController.navigate("scan") },
                 onUploadClick = { /* Deprecated/Not used directly in HomeScreen anymore if handled via LaunchedEffect */ },
                 onDownloadRackClick = { 
-                    // TODO: Navigate to download rack screen or trigger download rack functionality
+                    navController.navigate("download_rack")
                 },
                 onLogout = {
                     navController.navigate("login") {
@@ -100,6 +100,12 @@ fun NavGraph(
         }
         composable("scan") {
             com.syed.jetpacktwo.ui.scan.ScanScreen(
+                onBack = { navController.popBackStack() },
+                onRackStatusClick = { navController.navigate("rack_status") }
+            )
+        }
+        composable("download_rack") {
+            com.syed.jetpacktwo.ui.download.DownloadRackScreen(
                 onBack = { navController.popBackStack() }
             )
         }

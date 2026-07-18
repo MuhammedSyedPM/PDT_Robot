@@ -31,9 +31,21 @@ interface ApiService {
         @Header("Content-Type") contentType: String = "application/json-patch+json"
     ): Response<StockTakeResponse>
 
-    @GET("api/reports/rack-status")
-    suspend fun getRackStatus(): Response<List<com.syed.jetpacktwo.data.remote.model.RackStatusDto>>
+    @GET
+    suspend fun getRackStatus(
+        @Url url: String,
+        @Query("CustID") custId: String
+    ): Response<List<com.syed.jetpacktwo.data.remote.model.ExpectedRackDto>>
 
-    @GET("api/reports/stock-status")
-    suspend fun getStockStatus(): Response<List<com.syed.jetpacktwo.data.remote.model.StockStatusDto>>
+    @GET
+    suspend fun getStockStatus(
+        @Url url: String,
+        @Query("CustID") custId: String
+    ): Response<List<com.syed.jetpacktwo.data.remote.model.StockStatusDto>>
+
+    @GET
+    suspend fun getAllRacks(
+        @Url url: String,
+        @Query("CustID") custId: String
+    ): Response<List<com.syed.jetpacktwo.data.remote.model.ExpectedRackDto>>
 }

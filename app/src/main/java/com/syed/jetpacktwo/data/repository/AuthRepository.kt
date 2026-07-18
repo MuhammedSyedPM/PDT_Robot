@@ -7,6 +7,7 @@ import com.syed.jetpacktwo.data.remote.ApiService
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.syed.jetpacktwo.util.getErrorMessage
 
 @Singleton
 class AuthRepository @Inject constructor(
@@ -31,7 +32,7 @@ class AuthRepository @Inject constructor(
                 }
                 Result.success(body)
             } else {
-                Result.failure(Exception(response.errorBody()?.string() ?: "Unknown error"))
+                Result.failure(Exception(response.getErrorMessage()))
             }
         } catch (e: Exception) {
             Result.failure(e)
@@ -50,7 +51,7 @@ class AuthRepository @Inject constructor(
             if (response.isSuccessful && response.body() != null) {
                 Result.success(response.body()!!)
             } else {
-                Result.failure(Exception(response.errorBody()?.string() ?: "Failed to fetch devices"))
+                Result.failure(Exception(response.getErrorMessage()))
             }
         } catch (e: Exception) {
             Result.failure(e)

@@ -26,11 +26,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.syed.jetpacktwo.R
 import kotlinx.coroutines.delay
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun SplashScreen(
     onTimeout: () -> Unit
 ) {
+    val context = LocalContext.current
     var startAnimation by remember { mutableStateOf(false) }
 
     // Fade in animation for the image
@@ -67,6 +70,7 @@ fun SplashScreen(
     )
 
     LaunchedEffect(key1 = true) {
+        Toast.makeText(context, "hello", Toast.LENGTH_SHORT).show()
         delay(300) // Small initial pause
         startAnimation = true
         delay(3200) // 3.5 total seconds
@@ -148,13 +152,13 @@ fun SplashScreen(
                             Surface(
                                 modifier = Modifier.size(100.dp),
                                 shape = CircleShape,
-                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                                color = Color.White
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.PrecisionManufacturing,
-                                    contentDescription = null,
-                                    modifier = Modifier.padding(20.dp).fillMaxSize(),
-                                    tint = MaterialTheme.colorScheme.primary
+                                Image(
+                                    painter = painterResource(id = R.drawable.stock_eye_logo),
+                                    contentDescription = "Stock Eye Logo",
+                                    modifier = Modifier.padding(12.dp).fillMaxSize(),
+                                    contentScale = ContentScale.Fit
                                 )
                             }
                         }
@@ -288,13 +292,13 @@ fun SplashScreen(
                             Surface(
                                 modifier = Modifier.size(100.dp),
                                 shape = CircleShape,
-                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                                color = Color.White
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.PrecisionManufacturing,
-                                    contentDescription = null,
-                                    modifier = Modifier.padding(20.dp).fillMaxSize(),
-                                    tint = MaterialTheme.colorScheme.primary
+                                Image(
+                                    painter = painterResource(id = R.drawable.stock_eye_logo),
+                                    contentDescription = "Stock Eye Logo",
+                                    modifier = Modifier.padding(12.dp).fillMaxSize(),
+                                    contentScale = ContentScale.Fit
                                 )
                             }
                         }

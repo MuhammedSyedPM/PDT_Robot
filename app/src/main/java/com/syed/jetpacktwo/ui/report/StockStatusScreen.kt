@@ -229,8 +229,12 @@ fun StockStatusScreen(
                 }
             } else if (uiState is StockStatusUiState.Error) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text((uiState as StockStatusUiState.Error).message, color = MaterialTheme.colorScheme.error)
+                    // Fallback empty view when error occurs
                 }
+                com.syed.jetpacktwo.ui.components.ApiErrorDialog(
+                    errorMessage = (uiState as StockStatusUiState.Error).message,
+                    onDismiss = { viewModel.clearError() }
+                )
             } else {
                 // Unified Table Container
                 Surface(

@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -87,6 +88,11 @@ fun LoginScreen(
         animationSpec = tween(1200)
     )
 
+    val rotation by animateFloatAsState(
+        targetValue = if (startAnimation) 360f else 0f,
+        animationSpec = tween(2000, easing = LinearOutSlowInEasing)
+    )
+
     LaunchedEffect(Unit) {
         delay(100)
         startAnimation = true
@@ -140,6 +146,7 @@ fun LoginScreen(
                         showConfigDialog = { showConfigDialog = true },
                         onExit = onExit,
                         logoScale = logoScale,
+                        logoRotation = rotation,
                         contentAlpha = contentAlpha,
                         cardOffsetY = cardOffsetY,
                         startAnimation = startAnimation
@@ -184,6 +191,7 @@ fun LoginScreen(
                     showConfigDialog = { showConfigDialog = true },
                     onExit = onExit,
                     logoScale = logoScale,
+                    logoRotation = rotation,
                     contentAlpha = contentAlpha,
                     cardOffsetY = cardOffsetY,
                     startAnimation = startAnimation
@@ -537,6 +545,7 @@ fun LoginFormContent(
     showConfigDialog: () -> Unit,
     onExit: () -> Unit,
     logoScale: Float,
+    logoRotation: Float,
     contentAlpha: Float,
     cardOffsetY: androidx.compose.ui.unit.Dp,
     startAnimation: Boolean
@@ -558,17 +567,32 @@ fun LoginFormContent(
                 .scale(logoScale)
                 .alpha(contentAlpha)
         ) {
-            Surface(
-                modifier = Modifier.size(80.dp),
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .size(90.dp)
+                    .rotate(logoRotation)
             ) {
-                Icon(
-                    imageVector = Icons.Default.PrecisionManufacturing,
-                    contentDescription = null,
-                    modifier = Modifier.padding(16.dp).fillMaxSize(),
-                    tint = MaterialTheme.colorScheme.primary
-                )
+                // Outer ring
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    shape = CircleShape,
+                    color = Color.Transparent,
+                    border = androidx.compose.foundation.BorderStroke(2.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
+                ) {}
+                
+                Surface(
+                    modifier = Modifier.size(76.dp),
+                    shape = CircleShape,
+                    color = Color.White
+                ) {
+                    androidx.compose.foundation.Image(
+                        painter = androidx.compose.ui.res.painterResource(id = com.syed.jetpacktwo.R.drawable.stock_eye_logo),
+                        contentDescription = "Stock Eye Logo",
+                        modifier = Modifier.padding(10.dp).fillMaxSize(),
+                        contentScale = androidx.compose.ui.layout.ContentScale.Fit
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -736,22 +760,13 @@ fun LoginFormContent(
             }
         }
 
-        // Animated Error Message
-        AnimatedVisibility(
-            visible = loginResult?.isFailure == true,
-            enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically()
-        ) {
-            loginResult?.exceptionOrNull()?.let {
-                Text(
-                    text = it.message ?: "Login failed",
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(top = 24.dp),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    textAlign = TextAlign.Center
-                )
-            }
+        // Animated Error Message is now replaced by ApiErrorDialog
+        if (loginResult?.isFailure == true) {
+            val errorMsg = loginResult.exceptionOrNull()?.message ?: "Login failed"
+            com.syed.jetpacktwo.ui.components.ApiErrorDialog(
+                errorMessage = errorMsg,
+                onDismiss = { viewModel.resetLoginResult() }
+            )
         }
         
         Spacer(modifier = Modifier.height(32.dp))
