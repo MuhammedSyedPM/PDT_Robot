@@ -1,0 +1,37 @@
+package com.technowave.trolley_robo.di
+
+import android.content.Context
+import androidx.room.Room
+import com.technowave.trolley_robo.data.local.db.AppDatabase
+import com.technowave.trolley_robo.data.local.db.ScannedTagDao
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+object DatabaseModule {
+
+    @Provides
+    @Singleton
+    fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
+        return Room.databaseBuilder(
+            context,
+            AppDatabase::class.java,
+            "jetpack_two_db"
+        ).fallbackToDestructiveMigration().build()
+    }
+
+    @Provides
+    fun provideScannedTagDao(database: AppDatabase): ScannedTagDao {
+        return database.scannedTagDao()
+    }
+
+    @Provides
+    fun provideExpectedItemDao(database: AppDatabase): com.technowave.trolley_robo.data.local.db.ExpectedItemDao {
+        return database.expectedItemDao()
+    }
+}

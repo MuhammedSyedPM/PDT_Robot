@@ -1,0 +1,23 @@
+package com.technowave.trolley_robo.presentation.settings
+
+import androidx.lifecycle.ViewModel
+import com.technowave.trolley_robo.util.ThemeManager
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.StateFlow
+import javax.inject.Inject
+
+@HiltViewModel
+class SettingsViewModel @Inject constructor(
+    private val themeManager: ThemeManager
+) : ViewModel() {
+    val isDarkMode: StateFlow<Boolean> = themeManager.isDarkMode
+    val primaryColor: StateFlow<Long> = themeManager.primaryColor
+
+    fun toggleTheme() {
+        themeManager.toggleTheme()
+    }
+
+    fun setPrimaryColor(color: Long) {
+        themeManager.setPrimaryColor(color)
+    }
+}
