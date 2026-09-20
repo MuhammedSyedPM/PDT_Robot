@@ -7,13 +7,13 @@ plugins {
 }
 
 android {
-    namespace = "com.syed.jetpacktwo"
+    namespace = "com.technowave.trolley_robo"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "com.syed.jetpacktwo"
+        applicationId = "com.technowave.trolley_robo"
         minSdk = 25
         targetSdk = 36
         versionCode = 1
